@@ -1,0 +1,149 @@
+/* Navbar.module.css */
+
+.navbar {
+  background-color: #12141c;
+  color: #e0e0e0;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.navbarContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+}
+
+.navbarLogo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo {
+  height: 38px;
+  width: auto;
+  filter: drop-shadow(0 0 2px #37fc9c);
+  transition: filter 0.3s ease;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 6px #37fc9c);
+}
+
+.navbarLinks {
+  display: flex;
+  gap: 2.3rem;
+}
+
+.navLink {
+  position: relative;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #b0b3b8;
+  text-decoration: none;
+  padding: 6px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  transition: color 0.25s ease;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: #37fc9c;
+  transition: width 0.3s ease, left 0.3s ease;
+  border-radius: 2px;
+}
+
+.navLink:hover,
+.navLink:focus {
+  color: #37fc9c;
+  outline: none;
+}
+
+.navLink:hover::after,
+.navLink:focus::after {
+  width: 100%;
+  left: 0;
+}
+
+/* Text and icon spans for hover effect */
+.text {
+  transition: opacity 0.3s ease;
+}
+
+.icon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.showIcon {
+  opacity: 1;
+}
+
+.hiddenText {
+  opacity: 0;
+}
+
+.navbarActions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  color: #a9acb1;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.iconBtn:hover,
+.iconBtn:focus {
+  color: #37fc9c;
+  background-color: rgba(55, 252, 156, 0.15);
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .navbarLinks {
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+  .iconBtn {
+    padding: 4px;
+  }
+  .logo {
+    height: 32px;
+  }
+}
