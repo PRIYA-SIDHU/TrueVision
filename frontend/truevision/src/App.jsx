@@ -3,6 +3,8 @@ import AboutUs from './components/pages/aboutus';
 import ContactUs from './components/pages/ContactUs';
 import Navbar from './components/layouts/Navbar';
 import Dashboard from "./components/layouts/dashboard";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './App.css'
 
 function App() {
@@ -13,12 +15,12 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-      <Route path="/" element={<Dashboard />} />
+       <Route path="/" element={<Dashboard />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         {/* other routes */}
       </Routes>
-      
+    
     </Router>
 
     
