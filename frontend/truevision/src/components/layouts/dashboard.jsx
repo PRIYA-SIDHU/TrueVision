@@ -4,9 +4,6 @@ import gsap from "gsap";
 import colorspin from "../../assets/images/colorspin.png";
 import eyeImg from "../../assets/images/eye.png";
 
-
-
-
 export default function App() {
   const letterT = useRef(null);
   const letterE = useRef(null);
@@ -25,21 +22,21 @@ export default function App() {
   useEffect(() => {
     const tl = gsap.timeline();
 
-    // 🔹 Step 1: T appears first
+    // T
     tl.fromTo(
       letterT.current,
       { rotationX: -90, transformOrigin: "center bottom", opacity: 0 },
       { rotationX: 0, opacity: 1, duration: 1.2, ease: "bounce.out" }
     );
 
-    // 🔹 Step 2: Flower blooms right after T
+    // Flower
     tl.fromTo(
       flower.current,
       { scale: 0, opacity: 0 },
       { scale: 1.5, opacity: 1, duration: 0.8, ease: "elastic.out(1,0.5)" }
     ).to(flower.current, { opacity: 0, scale: 0, duration: 0.5, ease: "power1.inOut" });
 
-    // 🔹 Step 3: E flips → R
+    // E → R
     tl.fromTo(
       letterE.current,
       { y: 100, opacity: 0, rotationY: 180, transformOrigin: "center" },
@@ -53,14 +50,14 @@ export default function App() {
       })
       .to(letterE.current, { opacity: 1, duration: 0.3 });
 
-    // 🔹 Spinner starts
+    // Spinner
     tl.fromTo(
       spinner.current,
       { x: -200, rotation: 0, opacity: 0 },
       { x: 0, rotation: 720, opacity: 1, duration: 1.5, ease: "power2.out" }
     ).to(spinner.current, { rotation: "+=360", repeat: -1, duration: 2, ease: "linear" });
 
-    // 🔹 U starts immediately as spinner starts
+    // U
     tl.fromTo(
       letterU.current,
       { y: 50, opacity: 0 },
@@ -68,7 +65,7 @@ export default function App() {
       "<"
     );
 
-    // 🔹 E bounce 1 sec after U
+    // E bounce
     tl.fromTo(
       letterEBounce.current,
       { y: -500, opacity: 0 },
@@ -76,7 +73,7 @@ export default function App() {
       "+=1"
     );
 
-    // 🔹 VISION animation
+    // VISION
     const visionTimeline = gsap.timeline({ delay: 0.5 });
 
     visionTimeline.fromTo(
@@ -115,19 +112,30 @@ export default function App() {
       { x: 0, rotation: 0, opacity: 1, duration: 1.2, ease: "back.out(1.7)" }
     );
 
-    // 🔹 Eye animation inside O
-    visionTimeline.add(() => {
-      if (visionO.current && eye.current) {
-        const eyeSize = 200;
-        const oX = visionO.current.offsetLeft + visionO.current.offsetWidth / 2 - eyeSize / 2;
-        const oY = visionO.current.offsetTop + visionO.current.offsetHeight / 2 - eyeSize / 2;
-        gsap.fromTo(
-          eye.current,
-          { x: -500, y: oY, width: eyeSize, height: eyeSize, opacity: 0, position: "absolute" },
-          { x: oX, y: oY, opacity: 1, duration: 2, ease: "power4.out" }
-        );
-      }
-    }, "+=0.2");
+  const animateEye = () => {
+  if (visionO.current && eye.current) {
+    let eyeSize;
+    if (window.innerWidth <= 480) {
+      eyeSize = visionO.current.offsetWidth * 0.4;  // mobile ~ O ka 40%
+    } else if (window.innerWidth <= 768) {
+      eyeSize = visionO.current.offsetWidth * 0.5;  // tablet ~ O ka 50%
+    } else {
+      eyeSize = visionO.current.offsetWidth * 0.6;  // desktop ~ O ka 60%
+    }
+
+    const oX = visionO.current.offsetLeft + visionO.current.offsetWidth / 2 - eyeSize / 2;
+    const oY = visionO.current.offsetTop + visionO.current.offsetHeight / 2 - eyeSize / 2;
+
+    gsap.fromTo(
+      eye.current,
+      { x: -500, y: oY, width: eyeSize, height: eyeSize, opacity: 0, position: "absolute" },
+      { x: oX, y: oY, width: eyeSize, height: eyeSize, opacity: 1, duration: 2, ease: "power4.out" }
+    );
+  }
+};
+
+
+    visionTimeline.add(animateEye, "+=0.2");
 
     visionTimeline.fromTo(
       visionN.current,
@@ -136,6 +144,8 @@ export default function App() {
       "+=0.3"
     );
 
+    window.addEventListener("resize", animateEye);
+    return () => window.removeEventListener("resize", animateEye);
   }, []);
 
   return (
@@ -158,8 +168,8 @@ export default function App() {
 
       <div ref={flower} className={styles.flower}>🌸</div>
     
-<img ref={spinner} src={colorspin} className={styles.spinner} alt="spinner" />
-<img ref={eye} src={eyeImg} className={styles.eye} alt="eye" />
+      <img ref={spinner} src={colorspin} className={styles.spinner} alt="spinner" />
+   
     </div>
   );
 }
