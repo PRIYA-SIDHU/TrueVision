@@ -1,0 +1,230 @@
+/* Root colors for dark tech theme */
+:root {
+  --bg-dark: #0e111b;
+  --bg-card: #1b1f34;
+  --text-primary: #e0e6f3;
+  --text-secondary: #a0a4b3;
+  --highlight-1: #7c5cfa;
+  --highlight-2: #4bafff;
+  --btn-gradient-start: #2ebf91;
+  --btn-gradient-end: #1686a7;
+  --icon-filter: drop-shadow(0 0 1.5px #7c5cfaAA);
+}
+
+/* Page background */
+.pageBg {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #171a2a 0%, #232940 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 12px;
+  color: var(--text-primary);
+}
+
+/* Hero section */
+.heroSection {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0 8px 0;
+}
+
+.heroLeft {
+  max-width: 400px;
+  text-align: center;
+  width: 100%;
+  color: var(--text-primary);
+}
+
+.heading {
+  font-size: 2.3rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--highlight-1), var(--highlight-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroLeft p {
+  font-size: 1.05rem;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.heroLeft a {
+  color: var(--highlight-2);
+  text-decoration: underline;
+}
+
+.portraitImage {
+  width: 600px;
+  height: 430px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px #292e5faa;
+  display: block;
+  margin: 1.1rem auto 1.1rem auto;
+}
+
+/* Enhanced Get in touch card */
+.infoBlock {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 20px 18px 15px 18px;
+  margin: 0 auto;
+  max-width: 340px;
+  box-shadow: 0 0 25px 3px #4b7bf661 inset;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.infoBlock b {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  color: var(--highlight-1);
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 14px;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+/* Style icons more clearly */
+.icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: var(--icon-filter);
+  transition: filter 0.3s;
+}
+
+.icon:hover {
+  filter: drop-shadow(0 0 3px var(--highlight-1));
+}
+
+/* Links style */
+.contactRow a {
+  color: var(--highlight-2);
+  text-decoration: underline;
+}
+
+.contactRow span {
+  flex-shrink: 1;
+}
+
+/* Form section */
+.formSection {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 40px;
+}
+
+.form {
+  right: 0;
+  background: var(--bg-card);
+  border-radius: 18px;
+  box-shadow: 0 3px 30px #212641ee;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.12rem;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.form input,
+.form textarea {
+  padding: 0.75rem;
+  border-radius: 7px;
+  border: 1.5px solid #36547bcc;
+  font-size: 1.03rem;
+  width: 100%;
+  box-sizing: border-box;
+  background: #0d1120;
+  color: var(--text-primary);
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 82px;
+}
+
+.btn {
+  background: linear-gradient(90deg, var(--btn-gradient-start), var(--btn-gradient-end));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.08rem;
+  padding: 0.9rem 0;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #1686a738;
+  transition: filter 0.18s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 3px 18px var(--highlight-2);
+}
+
+.thankyou {
+  height: 40px;
+  background: #153f36;
+  border-left: 5px solid var(--highlight-1);
+  color: #4effbc;
+  padding: 1rem 1.2rem;
+  border-radius: 7px;
+  margin: 16px auto 0 auto;
+  text-align: center;
+  font-weight: 500;
+  max-width: 400px;
+}
+
+/* Responsive */
+@media (max-width: 540px) {
+  .heroLeft {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+
+  .portraitImage {
+    width: 90vw;
+    height: auto;
+  }
+
+  .infoBlock {
+    max-width: 100%;
+    padding: 16px 14px 10px 14px;
+  }
+
+  .form {
+    max-width: 100%;
+    padding: 20px 12px;
+  }
+
+  .thankyou {
+    max-width: 100%;
+    font-size: 0.98rem;
+  }
+}
