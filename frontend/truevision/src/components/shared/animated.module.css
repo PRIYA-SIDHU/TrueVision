@@ -1,0 +1,43 @@
+.splitSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 1.25rem;
+  margin: 2rem 0;
+  padding: 2.5rem 1.5rem;
+  box-shadow: 0 4px 24px rgba(14, 20, 36, 0.18);
+  margin-bottom: 400px;
+  margin-top: 400px;
+}
+
+
+.left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  
+}
+
+.right {
+  flex: 1;
+  color: #fff;
+  text-align: left;
+  padding-left: 0;
+
+}
+
+@media (max-width: 900px) {
+  .splitSection {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    gap: 1.6rem;
+  }
+  .left, .right {
+    width: 100%;
+    align-items: center;
+    padding: 0;
+    text-align: center;
+  }
+}
