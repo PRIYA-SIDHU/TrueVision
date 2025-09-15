@@ -12,6 +12,7 @@
 }
 
 .left {
+  order: 1;
   flex: 2;
   display: flex;
   flex-direction: column;
@@ -69,6 +70,7 @@
 }
 
 .right {
+  order: 2;
   flex: 1.7;
   display: flex;
   align-items: center;
@@ -77,9 +79,9 @@
 }
 
 .demoImage {
-  width: 390px;
+  width: 500px;
   max-width: 100%;
-  height: auto;
+  height: 400px;
   background: #181e2a;
   border-radius: 1.3rem;
   image-rendering: pixelated;
@@ -93,13 +95,19 @@
     padding: 2rem 1rem;
     gap: 1.6rem;
   }
-  .left, .right {
+  .left {
+    order: 2;
     flex: none;
     width: 100%;
     align-items: center;
     padding: 0;
   }
   .right {
+    order: 1;
+    flex: none;
+    width: 100%;
+    align-items: center;
+    padding: 0;
     justify-content: center;
     margin-top: 1.2rem;
   }
@@ -108,7 +116,9 @@
     margin-bottom: 0.45rem;
   }
   .demoImage {
-    width: 210px;
-    height: auto;
+     width: 70vw;
+    min-width: 170px;
+    max-width: 330px;
+    height: 330px;
   }
 }

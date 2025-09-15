@@ -1,9 +1,11 @@
 import React from "react";
 import styles from "./facerecognition.module.css";
+import AnimatedSection from "./animated";
 
 const FaceRecognition = () => (
-  <section className={styles.splitSection}>
-    {/* Text on Left */}
+  <AnimatedSection
+    
+    left = {
     <div className={styles.left}>
       <h1 className={styles.bigTitle}>Build an awesome portfolio</h1>
       <p className={styles.description}>
@@ -13,15 +15,19 @@ const FaceRecognition = () => (
     face recognition 
       </button>
     </div>
-    {/* Image or Demo on Right */}
-    <div className={styles.right}>
+    }
+  
+   right = {
+   <div className={styles.right}>
       <img
-        src="/face-recognition-demo.png"  // Replace with your face recognition demo/image
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfxPedWjxkXJc2auRUiKEWahf_7ONYV_JkFQ&s"  // Replace with your face recognition demo/image
         alt="Face Recognition Demo"
         className={styles.demoImage}
       />
     </div>
-  </section>
+    }
+    />
+  
 );
 
 export default FaceRecognition;

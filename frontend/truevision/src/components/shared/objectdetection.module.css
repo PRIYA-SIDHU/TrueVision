@@ -1,6 +1,6 @@
 .splitSection {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   border-radius: 1.25rem;
   margin: 2rem 0;
@@ -65,12 +65,16 @@
 }
 
 .demoImage {
-  width: 250px;
-  height: 250px;
-  object-fit: contain;
-  border-radius: 1rem;
+ 
+   width: clamp(320px, 38vw, 480px);
+  height: auto;
+  max-height: 440px;
   background: #181e2a;
+  border-radius: 1.2rem;
   image-rendering: pixelated;
+  border: 2px solid #1b1c21;
+  box-shadow: 0 5px 22px rgba(80, 80, 80, 0.09);
+  transition: t
 }
 
 @media (min-width: 768px) {
