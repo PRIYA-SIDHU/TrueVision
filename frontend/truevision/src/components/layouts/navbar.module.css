@@ -1,8 +1,8 @@
 /* Navbar.module.css */
 
 .navbar {
-  background-color: #12141c;
-  color: #e0e0e0;
+  background-color: #000000;
+  color: #fefcfc;
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   position: relative;
@@ -11,7 +11,7 @@
 }
 
 .navbarContainer {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0.8rem 1.5rem;
   display: flex;
@@ -45,11 +45,21 @@
   display: flex;
   gap: 2.3rem;
 }
+@keyframes fadeSlideInEnhanced {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 .navLink {
   position: relative;
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 1.3rem;
   color: #b0b3b8;
   text-decoration: none;
   padding: 6px 0;
@@ -60,6 +70,14 @@
   overflow: hidden;
   user-select: none;
   transition: color 0.25s ease;
+
+  /* New animation styles */
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-name: fadeSlideInEnhanced;
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-delay: var(--anim-delay, 0s);
 }
 
 .navLink::after {
@@ -110,6 +128,7 @@
 .hiddenText {
   opacity: 0;
 }
+
 
 .navbarActions {
   display: flex;
