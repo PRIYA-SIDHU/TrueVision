@@ -55,10 +55,14 @@ const Navbar = () => {
 
         {/* CENTER: Page links with icon hover effect */}
         <div className={styles.navbarLinks}>
-          {links.map(({ name, to, href }) => {
+          {links.map(({ name, to, href }, index) => {
             // Adjust key to match updated HoverIcons keys
             const key = name.replace(/\s/g, '');
             const isHovered = hoveredLink === name;
+            const animDelay = `${index * 0.3}s`; // stagger delay for animation
+
+            // Style with CSS variable for delay
+            const style = { '--anim-delay': animDelay };
 
             // If 'to' is defined, use React Router Link, else fallback to anchor (for hash links)
             if (to) {
@@ -67,6 +71,7 @@ const Navbar = () => {
                   key={name}
                   to={to}
                   className={styles.navLink}
+                  style={style}
                   onMouseEnter={() => setHoveredLink(name)}
                   onMouseLeave={() => setHoveredLink(null)}
                 >
@@ -85,6 +90,7 @@ const Navbar = () => {
                   key={name}
                   href={href}
                   className={styles.navLink}
+                  style={style}
                   onMouseEnter={() => setHoveredLink(name)}
                   onMouseLeave={() => setHoveredLink(null)}
                 >
