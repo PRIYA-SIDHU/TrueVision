@@ -1,6 +1,6 @@
 /* Root colors for dark tech theme */
 :root {
-  --bg-dark: #0e111b;
+  --bg-dark: #000000;
   --bg-card: #1b1f34;
   --text-primary: #e0e6f3;
   --text-secondary: #a0a4b3;
@@ -14,7 +14,7 @@
 /* Page background */
 .pageBg {
   min-height: 100vh;
-  background: linear-gradient(120deg, #171a2a 0%, #232940 100%);
+  background: var(--bg-dark);
   display: flex;
   flex-direction: column;
   align-items: center;
