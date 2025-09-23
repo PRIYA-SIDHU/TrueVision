@@ -71,19 +71,19 @@ const AboutUs = () => {
       id: 1,
       icon: "🚀",
       title: "Innovation",
-      description: "We constantly push boundaries and embrace new technologies to deliver groundbreaking solutions."
+      description: "We aim to push the boundaries of AI and computer vision to develop tools that bring real-world impact for visually impaired individuals and the community."
     },
     {
       id: 2,
       icon: "🤝",
       title: "Collaboration",
-      description: "We believe in the power of teamwork and building strong relationships with our clients and partners."
+      description: "We believe technology should serve humanity. That’s why our project focuses on inclusivity and accessibility, developed through teamwork and a shared vision."
     },
     {
       id: 3,
       icon: "⭐",
       title: "Excellence",
-      description: "We strive for perfection in everything we do, from code quality to customer service."
+      description: "We strive for precision in everything—from detecting faces and colors accurately to providing seamless user experiences for blind or low-vision individuals."
     }
   ];
 
@@ -93,7 +93,7 @@ const AboutUs = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>About Us</h1>
         <p className={styles.subtitle}>
-          We're passionate about creating innovative solutions that make a difference in people's lives.
+          "Our vision is to turn technology into a helping hand for those who need it the most."
         </p>
       </div>
 
@@ -101,8 +101,7 @@ const AboutUs = () => {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Our Mission</h2>
         <p className={styles.content}>
-          To empower individuals and businesses through cutting-edge technology and exceptional user experiences. 
-          We believe in the power of innovation to solve real-world problems and create meaningful connections.
+     Our mission is to empower people with low or no vision by creating smart solutions that detect surroundings, identify faces, and recognize colors in real time. At the same time, True Vision also serves as a reliable tool for CCTV monitoring and security applications, making technology beneficial for both personal assistance and surveillance.
         </p>
       </div>
 
