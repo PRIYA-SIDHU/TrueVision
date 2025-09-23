@@ -15,8 +15,8 @@ const AboutUs = () => {
   const teamMembers = [
     {
       id: 1,
-      name: "Alex Johnson",
-      role: "Lead Developer",
+      name: "Sunny Pandit",
+      role: "Leader",
       bio: "Full-stack developer specializing in React, Node.js, and cloud technologies.",
       image: memberImages.alex,
       linkedin: "https://linkedin.com/in/alexjohnson",
@@ -25,8 +25,8 @@ const AboutUs = () => {
     },
     {
       id: 2,
-      name: "Sarah Chen",
-      role: "UI/UX Designer",
+      name: "Mehakpreet Kaur",
+      role: "Backend ",
       bio: "Creative designer passionate about intuitive and beautiful user experiences.",
       image: memberImages.sarah,
       linkedin: "https://linkedin.com/in/sarahchen",
@@ -35,18 +35,18 @@ const AboutUs = () => {
     },
     {
       id: 3,
-      name: "Mike Rodriguez",
-      role: "Project Manager",
+      name: "Priya Sidhu",
+      role: "frontend",
       bio: "Experienced project manager ensuring smooth delivery and client satisfaction.",
       image: memberImages.mike,
       linkedin: "https://linkedin.com/in/mikerodriguez",
-      email: "mike.rodriguez@invader.com",
-      github: "https://github.com/mikerodriguez"
+      email: "priya.sidhu454@gmail.com",
+      github: "https://github.com/PRIYA-SIDHU"
     },
     {
       id: 4,
-      name: "Emily Davis",
-      role: "Backend Engineer",
+      name: "Ritika",
+      role: "frontend",
       bio: "Database optimization expert with Python, MongoDB, and microservices expertise.",
       image: memberImages.emily,
       linkedin: "https://linkedin.com/in/emilydavis",
@@ -55,8 +55,8 @@ const AboutUs = () => {
     },
     {
       id: 5,
-      name: "David Kim",
-      role: "DevOps Engineer",
+      name: "Navdeep sumbria",
+      role: "backend",
       bio: "Cloud infrastructure specialist focused on CI/CD pipelines and system scalability.",
       image: memberImages.david,
       linkedin: "https://linkedin.com/in/davidkim",
