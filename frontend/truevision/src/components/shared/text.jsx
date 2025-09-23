@@ -4,7 +4,6 @@ import gsap from "gsap";
 import colorspin from "../../assets/images/colorspin.png";
 import eyeImg from "../../assets/images/eye.png";
 
-
 export default function Text() {
   const letterT = useRef(null);
   const letterE = useRef(null);
@@ -20,7 +19,6 @@ export default function Text() {
   const visionN = useRef(null);
   const eye = useRef(null);
 
-
   useEffect(() => {
     const tl = gsap.timeline();
 
@@ -28,42 +26,42 @@ export default function Text() {
     tl.fromTo(
       letterT.current,
       { rotationX: -90, transformOrigin: "center bottom", opacity: 0 },
-      { rotationX: 0, opacity: 1, duration: 1.2, ease: "bounce.out" }
+      { rotationX: 0, opacity: 1, duration: 0.8, ease: "bounce.out" }
     );
 
     // Flower
     tl.fromTo(
       flower.current,
       { scale: 0, opacity: 0 },
-      { scale: 1.5, opacity: 1, duration: 0.8, ease: "elastic.out(1,0.5)" }
-    ).to(flower.current, { opacity: 0, scale: 0, duration: 0.5, ease: "power1.inOut" });
+      { scale: 1.5, opacity: 1, duration: 0.5, ease: "elastic.out(1,0.5)" }
+    ).to(flower.current, { opacity: 0, scale: 0, duration: 0.3, ease: "power1.inOut" });
 
     // E → R
     tl.fromTo(
       letterE.current,
       { y: 100, opacity: 0, rotationY: 180, transformOrigin: "center" },
-      { y: 0, opacity: 1, rotationY: 0, duration: 1, ease: "back.out(1.7)" },
+      { y: 0, opacity: 1, rotationY: 0, duration: 0.7, ease: "back.out(1.7)" },
       "+=0.1"
     )
       .to(letterE.current, {
         opacity: 0,
-        duration: 0.3,
+        duration: 0.2,
         onComplete: () => { letterE.current.innerText = "R"; },
       })
-      .to(letterE.current, { opacity: 1, duration: 0.3 });
+      .to(letterE.current, { opacity: 1, duration: 0.2 });
 
     // Spinner
     tl.fromTo(
       spinner.current,
       { x: -200, rotation: 0, opacity: 0 },
-      { x: 0, rotation: 720, opacity: 1, duration: 1.5, ease: "power2.out" }
-    ).to(spinner.current, { rotation: "+=360", repeat: -1, duration: 2, ease: "linear" });
+      { x: 0, rotation: 720, opacity: 1, duration: 1, ease: "power2.out" }
+    ).to(spinner.current, { rotation: "+=360", repeat: -1, duration: 1.5, ease: "linear" });
 
     // U
     tl.fromTo(
       letterU.current,
       { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.3, ease: "power1.out" },
+      { y: 0, opacity: 1, duration: 0.2, ease: "power1.out" },
       "<"
     );
 
@@ -71,38 +69,38 @@ export default function Text() {
     tl.fromTo(
       letterEBounce.current,
       { y: -500, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1.2, ease: "bounce.out" },
-      "+=1"
+      { y: 0, opacity: 1, duration: 0.8, ease: "bounce.out" },
+      "+=0.5"
     );
 
     // VISION
-    const visionTimeline = gsap.timeline({ delay: 0.5 });
+    const visionTimeline = gsap.timeline({ delay: 0.3 });
 
     visionTimeline.fromTo(
       visionV.current,
       { x: -800, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.5, ease: "power4.out" }
+      { x: 0, opacity: 1, duration: 0.4, ease: "power4.out" }
     );
 
     visionTimeline.fromTo(
       visionI1.current,
       { y: -200, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "bounce.out" },
-      "+=0.2"
+      { y: 0, opacity: 1, duration: 0.7, ease: "bounce.out" },
+      "+=0.1"
     );
 
-    visionTimeline.to(visionS.current, { opacity: 1, rotation: -90, duration: 0.2 })
-      .to(visionS.current, { duration: 2 });
+    visionTimeline.to(visionS.current, { opacity: 1, rotation: -90, duration: 0.15 })
+      .to(visionS.current, { duration: 1.2 });
 
     visionTimeline.fromTo(
       visionI2.current,
       { y: -200, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "bounce.out" }
+      { y: 0, opacity: 1, duration: 0.7, ease: "bounce.out" }
     );
 
     visionTimeline.to(visionS.current, {
       rotation: 0,
-      duration: 0.6,
+      duration: 0.4,
       ease: "power2.out",
       onStart: () => visionS.current.classList.add(styles['glow-yellow']),
       onComplete: () => setTimeout(() => visionS.current.classList.remove(styles['glow-yellow']), 800),
@@ -111,40 +109,38 @@ export default function Text() {
     visionTimeline.fromTo(
       visionO.current,
       { x: 300, rotation: 720, opacity: 0 },
-      { x: 0, rotation: 0, opacity: 1, duration: 1.2, ease: "back.out(1.7)" }
+      { x: 0, rotation: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
     );
 
-  const animateEye = () => {
-  if (visionO.current && eye.current) {
-    let eyeSize;
-    if (window.innerWidth <= 480) {
-      eyeSize = visionO.current.offsetWidth * 0.4;  // mobile ~ O ka 40%
-    } else if (window.innerWidth <= 768) {
-      eyeSize = visionO.current.offsetWidth * 0.5;  // tablet ~ O ka 50%
-    } else {
-      eyeSize = visionO.current.offsetWidth * 0.6;  // desktop ~ O ka 60%
-    }
+    const animateEye = () => {
+      if (visionO.current && eye.current) {
+        let eyeSize;
+        if (window.innerWidth <= 480) {
+          eyeSize = visionO.current.offsetWidth * 0.4;
+        } else if (window.innerWidth <= 768) {
+          eyeSize = visionO.current.offsetWidth * 0.5;
+        } else {
+          eyeSize = visionO.current.offsetWidth * 0.6;
+        }
 
-    const oX = visionO.current.offsetLeft + visionO.current.offsetWidth / 2 - eyeSize / 2;
-    const oY = visionO.current.offsetTop + visionO.current.offsetHeight / 2 - eyeSize / 2;
+        const oX = visionO.current.offsetLeft + visionO.current.offsetWidth / 2 - eyeSize / 2;
+        const oY = visionO.current.offsetTop + visionO.current.offsetHeight / 2 - eyeSize / 2;
 
-    gsap.fromTo(
-      eye.current,
-      { x: -500, y: oY, width: eyeSize, height: eyeSize, opacity: 0, position: "absolute" },
-      { x: oX, y: oY, width: eyeSize, height: eyeSize, opacity: 1, duration: 2, ease: "power4.out" }
-    );
-  }
+        gsap.fromTo(
+          eye.current,
+          { x: -500, y: oY, width: eyeSize, height: eyeSize, opacity: 0, position: "absolute" },
+          { x: oX, y: oY, width: eyeSize, height: eyeSize, opacity: 1, duration: 1.2, ease: "power4.out" }
+        );
+      }
+    };
 
-};
-
-
-    visionTimeline.add(animateEye, "+=0.2");
+    visionTimeline.add(animateEye, "+=0.1");
 
     visionTimeline.fromTo(
       visionN.current,
       { x: 200, opacity: 0, rotationY: 180 },
-      { x: 0, opacity: 1, rotationY: 0, duration: 1, ease: "back.out(1.7)" },
-      "+=0.3"
+      { x: 0, opacity: 1, rotationY: 0, duration: 0.7, ease: "back.out(1.7)" },
+      "+=0.2"
     );
 
     window.addEventListener("resize", animateEye);
@@ -172,7 +168,6 @@ export default function Text() {
       <div ref={flower} className={styles.flower}>🌸</div>
     
       <img ref={spinner} src={colorspin} className={styles.spinner} alt="spinner" />
-   
     </div>
   );
 }
