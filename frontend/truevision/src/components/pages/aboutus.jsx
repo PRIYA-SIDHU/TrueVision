@@ -1,11 +1,15 @@
 import React from 'react';
 import styles from './AboutUs.module.css';
+import  sunny from "../../assets/images/sunny.jpeg";
+import mehak from "../../assets/images/mehak.jpeg";
+import priya from "../../assets/images/priya.jpeg";
+
 
 // Sample images - replace these URLs with your actual images or imports
 const memberImages = {
-  alex: 'https://randomuser.me/api/portraits/men/32.jpg',
-  sarah: 'https://randomuser.me/api/portraits/women/44.jpg',
-  mike: 'https://randomuser.me/api/portraits/men/65.jpg',
+  sunny: sunny,
+  mehak: mehak,
+  priya: priya,
   emily: 'https://randomuser.me/api/portraits/women/50.jpg',
   david: 'https://randomuser.me/api/portraits/men/41.jpg'
 };
@@ -18,7 +22,7 @@ const AboutUs = () => {
       name: "Sunny Pandit",
       role: "Leader",
       bio: "Full-stack developer specializing in React, Node.js, and cloud technologies.",
-      image: memberImages.alex,
+      image: memberImages.sunny,
       linkedin: "https://linkedin.com/in/alexjohnson",
       email: "alex.johnson@invader.com",
       github: "https://github.com/alexjohnson"
@@ -28,7 +32,7 @@ const AboutUs = () => {
       name: "Mehakpreet Kaur",
       role: "Backend ",
       bio: "Creative designer passionate about intuitive and beautiful user experiences.",
-      image: memberImages.sarah,
+      image: memberImages.mehak,
       linkedin: "https://linkedin.com/in/sarahchen",
       email: "sarah.chen@invader.com",
       github: "https://github.com/sarahchen"
@@ -38,7 +42,7 @@ const AboutUs = () => {
       name: "Priya Sidhu",
       role: "frontend",
       bio: "Experienced project manager ensuring smooth delivery and client satisfaction.",
-      image: memberImages.mike,
+      image: memberImages.priya,
       linkedin: "https://linkedin.com/in/mikerodriguez",
       email: "priya.sidhu454@gmail.com",
       github: "https://github.com/PRIYA-SIDHU"
