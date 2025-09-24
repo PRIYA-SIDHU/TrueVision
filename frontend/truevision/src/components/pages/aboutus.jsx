@@ -1,11 +1,15 @@
 import React from 'react';
 import styles from './AboutUs.module.css';
+import  sunny from "../../assets/images/sunny.jpeg";
+import mehak from "../../assets/images/mehak.jpeg";
+import priya from "../../assets/images/priya.jpeg";
+
 
 // Sample images - replace these URLs with your actual images or imports
 const memberImages = {
-  alex: 'https://randomuser.me/api/portraits/men/32.jpg',
-  sarah: 'https://randomuser.me/api/portraits/women/44.jpg',
-  mike: 'https://randomuser.me/api/portraits/men/65.jpg',
+  sunny: sunny,
+  mehak: mehak,
+  priya: priya,
   emily: 'https://randomuser.me/api/portraits/women/50.jpg',
   david: 'https://randomuser.me/api/portraits/men/41.jpg'
 };
@@ -15,38 +19,38 @@ const AboutUs = () => {
   const teamMembers = [
     {
       id: 1,
-      name: "Alex Johnson",
-      role: "Lead Developer",
+      name: "Sunny Pandit",
+      role: "Leader",
       bio: "Full-stack developer specializing in React, Node.js, and cloud technologies.",
-      image: memberImages.alex,
+      image: memberImages.sunny,
       linkedin: "https://linkedin.com/in/alexjohnson",
       email: "alex.johnson@invader.com",
       github: "https://github.com/alexjohnson"
     },
     {
       id: 2,
-      name: "Sarah Chen",
-      role: "UI/UX Designer",
+      name: "Mehakpreet Kaur",
+      role: "Backend ",
       bio: "Creative designer passionate about intuitive and beautiful user experiences.",
-      image: memberImages.sarah,
+      image: memberImages.mehak,
       linkedin: "https://linkedin.com/in/sarahchen",
       email: "sarah.chen@invader.com",
       github: "https://github.com/sarahchen"
     },
     {
       id: 3,
-      name: "Mike Rodriguez",
-      role: "Project Manager",
+      name: "Priya Sidhu",
+      role: "frontend",
       bio: "Experienced project manager ensuring smooth delivery and client satisfaction.",
-      image: memberImages.mike,
+      image: memberImages.priya,
       linkedin: "https://linkedin.com/in/mikerodriguez",
-      email: "mike.rodriguez@invader.com",
-      github: "https://github.com/mikerodriguez"
+      email: "priya.sidhu454@gmail.com",
+      github: "https://github.com/PRIYA-SIDHU"
     },
     {
       id: 4,
-      name: "Emily Davis",
-      role: "Backend Engineer",
+      name: "Ritika",
+      role: "frontend",
       bio: "Database optimization expert with Python, MongoDB, and microservices expertise.",
       image: memberImages.emily,
       linkedin: "https://linkedin.com/in/emilydavis",
@@ -55,8 +59,8 @@ const AboutUs = () => {
     },
     {
       id: 5,
-      name: "David Kim",
-      role: "DevOps Engineer",
+      name: "Navdeep sumbria",
+      role: "backend",
       bio: "Cloud infrastructure specialist focused on CI/CD pipelines and system scalability.",
       image: memberImages.david,
       linkedin: "https://linkedin.com/in/davidkim",
@@ -71,19 +75,19 @@ const AboutUs = () => {
       id: 1,
       icon: "🚀",
       title: "Innovation",
-      description: "We constantly push boundaries and embrace new technologies to deliver groundbreaking solutions."
+      description: "We aim to push the boundaries of AI and computer vision to develop tools that bring real-world impact for visually impaired individuals and the community."
     },
     {
       id: 2,
       icon: "🤝",
       title: "Collaboration",
-      description: "We believe in the power of teamwork and building strong relationships with our clients and partners."
+      description: "We believe technology should serve humanity. That’s why our project focuses on inclusivity and accessibility, developed through teamwork and a shared vision."
     },
     {
       id: 3,
       icon: "⭐",
       title: "Excellence",
-      description: "We strive for perfection in everything we do, from code quality to customer service."
+      description: "We strive for precision in everything—from detecting faces and colors accurately to providing seamless user experiences for blind or low-vision individuals."
     }
   ];
 
@@ -93,7 +97,7 @@ const AboutUs = () => {
       <div className={styles.header}>
         <h1 className={styles.title}>About Us</h1>
         <p className={styles.subtitle}>
-          We're passionate about creating innovative solutions that make a difference in people's lives.
+          "Our vision is to turn technology into a helping hand for those who need it the most."
         </p>
       </div>
 
@@ -101,8 +105,7 @@ const AboutUs = () => {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Our Mission</h2>
         <p className={styles.content}>
-          To empower individuals and businesses through cutting-edge technology and exceptional user experiences. 
-          We believe in the power of innovation to solve real-world problems and create meaningful connections.
+     Our mission is to empower people with low or no vision by creating smart solutions that detect surroundings, identify faces, and recognize colors in real time. At the same time, True Vision also serves as a reliable tool for CCTV monitoring and security applications, making technology beneficial for both personal assistance and surveillance.
         </p>
       </div>
 

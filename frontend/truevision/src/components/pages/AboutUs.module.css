@@ -1,9 +1,9 @@
 :root {
-  --bg-dark: #10131b;
+  --bg-dark: linear-gradient(135deg, #0a1921, #0d1e2f, #2a6985);
   --bg-card: #161925;
-  --gradient-dark: linear-gradient(135deg, #212741 0%, #232e56 90%);
-  --highlight: #7c5cfa;
-  --highlight2: #4ffdff;
+  --gradient-dark:  linear-gradient(135deg, #0a1921, #1e466e, #3a91b6);
+  --highlight: #457ac0;
+  --highlight2: #ffffff;
   --text-main: #f3f6fc;
   --text-secondary: #b8bcd1;
   --link: #44eaff;
@@ -16,7 +16,7 @@ body {
 }
 
 .container {
-  max-width: 1500px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -139,6 +139,7 @@ body {
 }
 
 .memberPhoto {
+  zoom: 2rem;
   width: 130px;
   height: 130px;
   border-radius: 50%;
@@ -221,7 +222,7 @@ body {
 }
 
 .ctaSection {
-  background: #232847;
+  background:linear-gradient(135deg, #0e2430, #071f36, #3a91b6);
   color: var(--highlight2);
   padding: 3rem 2rem;
   border-radius: 12px;

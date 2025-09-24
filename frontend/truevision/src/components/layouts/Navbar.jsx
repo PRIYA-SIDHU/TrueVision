@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // added for navigation
 import styles from './Navbar.module.css';
+import Imglogo from "../../assets/images/generated-image-4.png"
 
 // Enhanced SVG icons for hover effect, updated About and Contact icons
 const HoverIcons = {
@@ -35,7 +36,7 @@ const HoverIcons = {
 const links = [
   { name: 'Home', to: '/' },
   { name: 'About Us', to: '/about' },         // React Router path for about page
-  { name: 'Featured', href: '#featured' },    // keep hash link as anchor
+  { name: 'Featured', to: '/featured#object-detection' },    // keep hash link as anchor
   { name: 'Contact Me', to: '/contact' },     // React Router path for contact page
 ];
 
@@ -49,7 +50,7 @@ const Navbar = () => {
         {/* LEFT GROUP: Logo */}
         <div className={styles.leftGroup}>
           <div className={styles.navbarLogo}>
-            <img src="./images/logo2.png" className={styles.logo} alt="Logo" />
+            <img src={Imglogo} className={styles.logo} alt="Logo" />
           </div>
         </div>
 
