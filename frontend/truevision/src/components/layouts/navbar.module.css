@@ -31,8 +31,8 @@
 }
 
 .logo {
-  height: 38px;
-  width: auto;
+  height: 90px;
+  width: 80px;
   filter: drop-shadow(0 0 2px #37fc9c);
   transition: filter 0.3s ease;
 }
@@ -163,6 +163,7 @@
     padding: 4px;
   }
   .logo {
-    height: 32px;
+    height: 52px;
+    width: 52px
   }
 }

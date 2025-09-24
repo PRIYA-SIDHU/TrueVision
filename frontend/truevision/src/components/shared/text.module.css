@@ -1,6 +1,6 @@
 
 .app {
-  background-color: black;
+
   color: white;
   height: 100vh;
   width: 100vw;
@@ -14,14 +14,14 @@
 body, html {
   margin: 0;
   padding: 0;
-  background-color: black;
+
   color: white;
   height: 100%;
   width: 100%;
 }
 
 .container {
-    background-color: black;
+  background: #000000;
   position: relative;
   height: 100vh;
   width: 100vw;
@@ -30,6 +30,7 @@ body, html {
 
 /* ================= TRUE ================= */
 .true {
+  
   position: absolute;
   top: 12vh;
   left: 40%;
@@ -75,10 +76,10 @@ body, html {
 
 /* ================= FLOWER ================= */
 .flower {
-  position: absolute;
-  top: 23vh;
+  position:absolute;
+   vertical-align: middle;
+  top: 35vh;
   left: 15vw; /* ye ensure karega ki letters wrap na ho */
-
   font-size: 7vw;
   opacity: 0;
   pointer-events: none;
