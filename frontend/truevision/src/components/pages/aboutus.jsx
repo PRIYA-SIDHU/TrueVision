@@ -1,13 +1,20 @@
 import React from 'react';
 import styles from './AboutUs.module.css';
+import  sunny from "../../assets/images/sunny2.png";
+import mehak from "../../assets/images/mehak.jpeg";
+import priya from "../../assets/images/priya.jpeg";
+import ritika from "../../assets/images/ritika2.png";
+import navdeep from "../../assets/images/navdeep.jpeg";
+
+
 
 // Sample images - replace these URLs with your actual images or imports
 const memberImages = {
-  alex: 'https://randomuser.me/api/portraits/men/32.jpg',
-  sarah: 'https://randomuser.me/api/portraits/women/44.jpg',
-  mike: 'https://randomuser.me/api/portraits/men/65.jpg',
-  emily: 'https://randomuser.me/api/portraits/women/50.jpg',
-  david: 'https://randomuser.me/api/portraits/men/41.jpg'
+  sunny: sunny,
+  mehak: mehak,
+  priya: priya,
+  ritika : ritika,
+  navdeep: navdeep,
 };
 
 const AboutUs = () => {
@@ -18,28 +25,28 @@ const AboutUs = () => {
       name: "Sunny Pandit",
       role: "Leader",
       bio: "Full-stack developer specializing in React, Node.js, and cloud technologies.",
-      image: memberImages.alex,
-      linkedin: "https://linkedin.com/in/alexjohnson",
-      email: "alex.johnson@invader.com",
-      github: "https://github.com/alexjohnson"
+      image: memberImages.sunny,
+      linkedin: "https://www.linkedin.com/in/sunny-pandit-01a531291?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      email: "sunny7254sjps@gmail.com",
+      github: "https://github.com/SunnyPandit26"
     },
     {
       id: 2,
       name: "Mehakpreet Kaur",
       role: "Backend ",
       bio: "Creative designer passionate about intuitive and beautiful user experiences.",
-      image: memberImages.sarah,
-      linkedin: "https://linkedin.com/in/sarahchen",
-      email: "sarah.chen@invader.com",
-      github: "https://github.com/sarahchen"
+      image: memberImages.mehak,
+      linkedin: "https://www.linkedin.com/in/mehakpreet-kaur-b2591b286",
+      email: "mehak341217@gmail.com",
+      github: "https://github.com/Mehak3412"
     },
     {
       id: 3,
       name: "Priya Sidhu",
       role: "frontend",
       bio: "Experienced project manager ensuring smooth delivery and client satisfaction.",
-      image: memberImages.mike,
-      linkedin: "https://linkedin.com/in/mikerodriguez",
+      image: memberImages.priya,
+      linkedin: "https://www.linkedin.com/in/priya-sidhu-b21279343?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
       email: "priya.sidhu454@gmail.com",
       github: "https://github.com/PRIYA-SIDHU"
     },
@@ -48,7 +55,7 @@ const AboutUs = () => {
       name: "Ritika",
       role: "frontend",
       bio: "Database optimization expert with Python, MongoDB, and microservices expertise.",
-      image: memberImages.emily,
+      image: memberImages.ritika,
       linkedin: "https://linkedin.com/in/emilydavis",
       email: "emily.davis@invader.com",
       github: "https://github.com/emilydavis"
@@ -58,7 +65,7 @@ const AboutUs = () => {
       name: "Navdeep sumbria",
       role: "backend",
       bio: "Cloud infrastructure specialist focused on CI/CD pipelines and system scalability.",
-      image: memberImages.david,
+      image: memberImages.navdeep,
       linkedin: "https://linkedin.com/in/davidkim",
       email: "david.kim@invader.com",
       github: "https://github.com/davidkim"

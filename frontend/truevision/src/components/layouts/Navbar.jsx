@@ -19,12 +19,12 @@ const HoverIcons = {
       <line x1="12" y1="8" x2="12" y2="8" />
     </svg>
   ),
-  Featured: (
+  Features: (
     <svg width="20" height="20" fill="#37fc9c" viewBox="0 0 24 24" aria-hidden="true">
       <polygon points="12,2 15,11 24,11 17,17 20,26 12,20 4,26 7,17 0,11 9,11" stroke="#37fc9c" strokeWidth="2" fill="none" />
     </svg>
   ),
-  ContactMe: (
+  ContactUs: (
     <svg width="20" height="20" fill="none" stroke="#37fc9c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M21 8V7a4 4 0 0 0-8 0v1" />
       <rect x="3" y="11" width="18" height="10" rx="2" ry="2" />
@@ -36,8 +36,8 @@ const HoverIcons = {
 const links = [
   { name: 'Home', to: '/' },
   { name: 'About Us', to: '/about' },         // React Router path for about page
-  { name: 'Featured', to: '/featured#object-detection' },    // keep hash link as anchor
-  { name: 'Contact Me', to: '/contact' },     // React Router path for contact page
+  { name: 'Features', to: '/featured#object-detection' },    // keep hash link as anchor
+  { name: 'Contact Us', to: '/contact' },     // React Router path for contact page
 ];
 
 const Navbar = () => {

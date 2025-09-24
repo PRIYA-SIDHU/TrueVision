@@ -139,6 +139,7 @@ body {
 }
 
 .memberPhoto {
+  scale: 30px;
   width: 130px;
   height: 130px;
   border-radius: 50%;
@@ -148,6 +149,7 @@ body {
   border: 3px solid var(--highlight2);
   transition: 0.23s;
 }
+
 
 .memberPhoto:hover {
   border-color: var(--highlight);
