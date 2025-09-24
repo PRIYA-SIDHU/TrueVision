@@ -1,8 +1,11 @@
 import React from 'react';
 import styles from './AboutUs.module.css';
-import  sunny from "../../assets/images/sunny.jpeg";
+import  sunny from "../../assets/images/sunny2.png";
 import mehak from "../../assets/images/mehak.jpeg";
 import priya from "../../assets/images/priya.jpeg";
+import ritika from "../../assets/images/ritika2.png";
+import navdeep from "../../assets/images/navdeep.jpeg";
+
 
 
 // Sample images - replace these URLs with your actual images or imports
@@ -10,8 +13,8 @@ const memberImages = {
   sunny: sunny,
   mehak: mehak,
   priya: priya,
-  emily: 'https://randomuser.me/api/portraits/women/50.jpg',
-  david: 'https://randomuser.me/api/portraits/men/41.jpg'
+  ritika : ritika,
+  navdeep: navdeep,
 };
 
 const AboutUs = () => {
@@ -52,7 +55,7 @@ const AboutUs = () => {
       name: "Ritika",
       role: "frontend",
       bio: "Database optimization expert with Python, MongoDB, and microservices expertise.",
-      image: memberImages.emily,
+      image: memberImages.ritika,
       linkedin: "https://linkedin.com/in/emilydavis",
       email: "emily.davis@invader.com",
       github: "https://github.com/emilydavis"
@@ -62,7 +65,7 @@ const AboutUs = () => {
       name: "Navdeep sumbria",
       role: "backend",
       bio: "Cloud infrastructure specialist focused on CI/CD pipelines and system scalability.",
-      image: memberImages.david,
+      image: memberImages.navdeep,
       linkedin: "https://linkedin.com/in/davidkim",
       email: "david.kim@invader.com",
       github: "https://github.com/davidkim"
