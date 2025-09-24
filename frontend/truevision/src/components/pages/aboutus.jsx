@@ -26,9 +26,9 @@ const AboutUs = () => {
       role: "Leader",
       bio: "Full-stack developer specializing in React, Node.js, and cloud technologies.",
       image: memberImages.sunny,
-      linkedin: "https://linkedin.com/in/alexjohnson",
-      email: "alex.johnson@invader.com",
-      github: "https://github.com/alexjohnson"
+      linkedin: "https://www.linkedin.com/in/sunny-pandit-01a531291?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+      email: "sunny7254sjps@gmail.com",
+      github: "https://github.com/SunnyPandit26"
     },
     {
       id: 2,
@@ -36,9 +36,9 @@ const AboutUs = () => {
       role: "Backend ",
       bio: "Creative designer passionate about intuitive and beautiful user experiences.",
       image: memberImages.mehak,
-      linkedin: "https://linkedin.com/in/sarahchen",
-      email: "sarah.chen@invader.com",
-      github: "https://github.com/sarahchen"
+      linkedin: "https://www.linkedin.com/in/mehakpreet-kaur-b2591b286",
+      email: "mehak341217@gmail.com",
+      github: "https://github.com/Mehak3412"
     },
     {
       id: 3,
@@ -46,7 +46,7 @@ const AboutUs = () => {
       role: "frontend",
       bio: "Experienced project manager ensuring smooth delivery and client satisfaction.",
       image: memberImages.priya,
-      linkedin: "https://linkedin.com/in/mikerodriguez",
+      linkedin: "https://www.linkedin.com/in/priya-sidhu-b21279343?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
       email: "priya.sidhu454@gmail.com",
       github: "https://github.com/PRIYA-SIDHU"
     },

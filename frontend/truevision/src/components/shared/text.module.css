@@ -1,6 +1,4 @@
-
 .app {
-
   color: white;
   height: 100vh;
   width: 100vw;
@@ -14,23 +12,22 @@
 body, html {
   margin: 0;
   padding: 0;
-
   color: white;
   height: 100%;
   width: 100%;
 }
 
 .container {
-  background: #000000;
+  background: black;
   position: relative;
   height: 100vh;
   width: 100vw;
+  margin-top: -5%;
   perspective: 1000px;
 }
 
 /* ================= TRUE ================= */
 .true {
-  
   position: absolute;
   top: 12vh;
   left: 40%;
@@ -46,11 +43,11 @@ body, html {
   top: 30vh; /* TRUE ke neeche */
   left: 40%; /* medium screen me adjust kar sakte ho */
   transform: translateX(-10%);
-  white-space: nowrap;  font-size: clamp(6rem, 20vw, 20rem);
+  white-space: nowrap;
+  font-size: clamp(6rem, 20vw, 20rem);
   font-weight: bold;
   font-family: Poppins Bold, sans-serif;
 }
-
 
 .vision span {
   display: inline-block;
@@ -76,24 +73,17 @@ body, html {
 
 /* ================= FLOWER ================= */
 .flower {
-  position:absolute;
-   vertical-align: middle;
-  top: 35vh;
+  /* background-color: red; */
+  height: 35%;
+  position: absolute;
+  vertical-align: middle;
+  margin-top:7%;
   left: 15vw; /* ye ensure karega ki letters wrap na ho */
   font-size: 7vw;
   opacity: 0;
   pointer-events: none;
   text-shadow: 0 0 2vw pink, 0 0 4vw deeppink;
   transform-origin: center;
-}
-
-/* ================= SPINNER ================= */
-.spinner {
-  position: absolute;
-  top: 5vh;
-  left: 12vw;
-  width: 13vw;
-  opacity: 0;
 }
 
 /* ================= LETTERS ================= */
@@ -108,31 +98,14 @@ body, html {
   opacity: 0;
 }
 
-/* ================= EYE ================= */
-.eye {
-  position: absolute;
-  top: 60vh;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  width: 20vw;   /* responsive size */
-  height: auto;
-  opacity: 0;
-}
-
 /* ================= RESPONSIVE ================= */
 
 /* 🔹 Mobile */
 @media (max-width: 480px) {
   .true {
     top: 15vh;
-    left: 5%;
-    font-size: 20vw;
-  }
-
-  .spinner {
-     top: 8vh;
-    left: 14%;
-    width: 20vw;
+    left: 10%;
+    font-size: 30vw;
   }
 
   .flower {
@@ -140,21 +113,13 @@ body, html {
     left: 17%;
     font-size: 10vw;
   }
-   .vision{
-        bottom: 53vh;
-    left: 11%;
-    font-size: 17vw;
-   }
-.eye {
-  position: absolute;
-  top: 50vh;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  width: 15vw;   /* fallback size, GSAP override karega */
-  height: auto;
-  opacity: 0;
-}
 
+  .vision {
+    bottom: 80vh;
+    left: 15%;
+    font-size: 26vw;
+    background-color: red;
+  }
 }
 
 /* 🔹 Tablet */
@@ -165,14 +130,8 @@ body, html {
     font-size: 16vw;
   }
 
-  .spinner {
-    top: 4vh;
-    left: 10vw;
-    width: 18vw;
-  }
-
   .flower {
-       top: 15vh;
+    top: 15vh;
     left: 13vw;
     font-size: 8vw;
   }
@@ -182,63 +141,40 @@ body, html {
     left: 13%;
     font-size: 16vw;
   }
-
-  .eye {
-    top: 45vh;
-    width: 18vw;
-  }
 }
 
 /* 🔹 Desktop (default) */
-@media (min-width: 769px)and (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
   .true {
-     font-size: 16vw;
-    left: 2%;
+    font-size: 16vw;
+    left: 15%;
   }
 
-   .spinner {
-        top: 3vh;
-    left: 9vw;
-    width: 17vw;
-  }
   .flower {
-     top: 14vh;
-    left: 14vw;
+    top: 14vh;
+    left: 25vw;
     font-size: 8vw;
   }
 
-
-
+  
   .vision {
-     font-size: 15vw;
-    left: 13%;
-    top: 29vh;
-  }
-
-  .eye {
-    width: 15vw;
+    font-size: 15vw;
+    left: 15%;
+    top: 40vh;
   }
 }
 
-
-@media (min-width: 1025px)and (max-width: 1200px) {
+@media (min-width: 1025px) and (max-width: 1200px) {
   .true {
-      font-size: 19vw;
+    font-size: 19vw;
     left: 1%;
   }
 
-   .spinner {
-        top: 3vh;
-    left: 12vw;
-    width: 17vw;
-  }
   .flower {
     top: 16vh;
     left: 15vw;
     font-size: 8vw;
   }
-
-
 
   .vision {
     font-size: 22vw;
@@ -246,27 +182,22 @@ body, html {
     top: 42vh;
   }
 }
+
 @media (min-width: 1201px) {
   .true {
-      font-size: 18vw;
+    font-size: 18vw;
     left: 3%;
   }
 
-   .spinner {
-        top:0.5vh;
-    left: 13vw;
-    width: 13vw;
-  }
   .flower {
     top: 16vh;
     left: 15vw;
     font-size: 8vw;
   }
 
-
-
   .vision {
     font-size: 18vw;
     left: 40%;
     top: 42vh;
-  }}
+  }
+}
