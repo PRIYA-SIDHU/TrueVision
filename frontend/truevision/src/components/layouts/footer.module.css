@@ -1,0 +1,28 @@
+.container{
+  background-color: rgb(21, 20, 20);
+  margin-bottom: 0;
+}
+@media screen and (max-width: 650px){
+.container {
+/* height: calc(100vh - 70px); */
+width: 100%;
+/* max-width: 400px; */
+margin : 0 auto;
+border-radius : 20px;
+box-shadow: 0 10px 30px rgb(0, 0, 0.2);
+}
+}
+/* ===== Logo ===== */
+.logo{
+   width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgb(21, 21, 108);
+  background-color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+
+}
+
+.logo:hover { transform: scale(1.05); }
+

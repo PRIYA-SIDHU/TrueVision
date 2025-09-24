@@ -1,0 +1,272 @@
+
+.app {
+
+  color: white;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+
+  color: white;
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  background: #000000;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  perspective: 1000px;
+}
+
+/* ================= TRUE ================= */
+.true {
+  
+  position: absolute;
+  top: 12vh;
+  left: 40%;
+  font-size: 15vw; /* responsive font size */
+  font-weight: bold;
+  font-family: "Poppins Bold", sans-serif;
+  display: inline-block;
+}
+
+/* ================= VISION ================= */
+.vision {
+  position: absolute;
+  top: 30vh; /* TRUE ke neeche */
+  left: 40%; /* medium screen me adjust kar sakte ho */
+  transform: translateX(-10%);
+  white-space: nowrap;  font-size: clamp(6rem, 20vw, 20rem);
+  font-weight: bold;
+  font-family: Poppins Bold, sans-serif;
+}
+
+
+.vision span {
+  display: inline-block;
+}
+
+.vision-v {
+  display: inline-block;
+  position: relative;
+}
+
+.vision-s {
+  display: inline-block;
+  transform-origin: center center;
+  color: white;
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+.vision-s.glow-yellow {
+  color: yellow;
+  text-shadow: 0 0 0.5vw #ff0, 0 0 2vw #ff0, 0 0 3vw #ff0;
+}
+
+/* ================= FLOWER ================= */
+.flower {
+  position:absolute;
+   vertical-align: middle;
+  top: 35vh;
+  left: 15vw; /* ye ensure karega ki letters wrap na ho */
+  font-size: 7vw;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 0 2vw pink, 0 0 4vw deeppink;
+  transform-origin: center;
+}
+
+/* ================= SPINNER ================= */
+.spinner {
+  position: absolute;
+  top: 5vh;
+  left: 12vw;
+  width: 13vw;
+  opacity: 0;
+}
+
+/* ================= LETTERS ================= */
+.letter-t,
+.letter-e,
+.letter-u {
+  display: inline-block;
+}
+
+.letter-e-bounce {
+  display: inline-block;
+  opacity: 0;
+}
+
+/* ================= EYE ================= */
+.eye {
+  position: absolute;
+  top: 60vh;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  width: 20vw;   /* responsive size */
+  height: auto;
+  opacity: 0;
+}
+
+/* ================= RESPONSIVE ================= */
+
+/* 🔹 Mobile */
+@media (max-width: 480px) {
+  .true {
+    top: 15vh;
+    left: 5%;
+    font-size: 20vw;
+  }
+
+  .spinner {
+     top: 8vh;
+    left: 14%;
+    width: 20vw;
+  }
+
+  .flower {
+    top: 17vh;
+    left: 17%;
+    font-size: 10vw;
+  }
+   .vision{
+        bottom: 53vh;
+    left: 11%;
+    font-size: 17vw;
+   }
+.eye {
+  position: absolute;
+  top: 50vh;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  width: 15vw;   /* fallback size, GSAP override karega */
+  height: auto;
+  opacity: 0;
+}
+
+}
+
+/* 🔹 Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+  .true {
+    bottom: 50vh;
+    left: 4%;
+    font-size: 16vw;
+  }
+
+  .spinner {
+    top: 4vh;
+    left: 10vw;
+    width: 18vw;
+  }
+
+  .flower {
+       top: 15vh;
+    left: 13vw;
+    font-size: 8vw;
+  }
+
+  .vision {
+    bottom: 60vh;
+    left: 13%;
+    font-size: 16vw;
+  }
+
+  .eye {
+    top: 45vh;
+    width: 18vw;
+  }
+}
+
+/* 🔹 Desktop (default) */
+@media (min-width: 769px)and (max-width: 1024px) {
+  .true {
+     font-size: 16vw;
+    left: 2%;
+  }
+
+   .spinner {
+        top: 3vh;
+    left: 9vw;
+    width: 17vw;
+  }
+  .flower {
+     top: 14vh;
+    left: 14vw;
+    font-size: 8vw;
+  }
+
+
+
+  .vision {
+     font-size: 15vw;
+    left: 13%;
+    top: 29vh;
+  }
+
+  .eye {
+    width: 15vw;
+  }
+}
+
+
+@media (min-width: 1025px)and (max-width: 1200px) {
+  .true {
+      font-size: 19vw;
+    left: 1%;
+  }
+
+   .spinner {
+        top: 3vh;
+    left: 12vw;
+    width: 17vw;
+  }
+  .flower {
+    top: 16vh;
+    left: 15vw;
+    font-size: 8vw;
+  }
+
+
+
+  .vision {
+    font-size: 22vw;
+    left: 24%;
+    top: 42vh;
+  }
+}
+@media (min-width: 1201px) {
+  .true {
+      font-size: 18vw;
+    left: 3%;
+  }
+
+   .spinner {
+        top:0.5vh;
+    left: 13vw;
+    width: 13vw;
+  }
+  .flower {
+    top: 16vh;
+    left: 15vw;
+    font-size: 8vw;
+  }
+
+
+
+  .vision {
+    font-size: 18vw;
+    left: 40%;
+    top: 42vh;
+  }}
