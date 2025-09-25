@@ -1,18 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const FaceRecognitionPage = () => {
+const ColorDetectionPage = () => {
   const [logs, setLogs] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [websocketConnected, setWebsocketConnected] = useState(false);
   const [systemStatus, setSystemStatus] = useState(null);
   const [isPageVisible, setIsPageVisible] = useState(true);
   const [systemPaused, setSystemPaused] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [specificColor, setSpecificColor] = useState('');
   
   const logsEndRef = useRef(null);
   const websocketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const navigate = useNavigate();
+
+  const availableColors = [
+    'red', 'green', 'blue', 'yellow', 'orange', 
+    'pink', 'purple', 'black', 'white'
+  ];
 
   // Auto-scroll to bottom of logs
   const scrollToBottom = () => {
@@ -26,7 +33,7 @@ const FaceRecognitionPage = () => {
   // Manual Resume Function
   const handleResumeSystem = async () => {
     try {
-      const response = await fetch('/api/resume-system', { method: 'POST' });
+      const response = await fetch('http://127.0.0.1:8000/resume-system', { method: 'POST' });
       if (response.ok) {
         const data = await response.json();
         setSystemPaused(data.system_paused);
@@ -38,6 +45,38 @@ const FaceRecognitionPage = () => {
     }
   };
 
+  // Start Detection
+  const handleStartDetection = async (color = null) => {
+    try {
+      const url = color 
+        ? `http://127.0.0.1:8000/start-detection?color=${color}`
+        : 'http://127.0.0.1:8000/start-detection';
+      
+      const response = await fetch(url, { method: 'POST' });
+      if (response.ok) {
+        setDetecting(true);
+        setSpecificColor(color || '');
+        console.log(`Started detecting ${color || 'all colors'}`);
+      }
+    } catch (error) {
+      console.error('Error starting detection:', error);
+    }
+  };
+
+  // Stop Detection
+  const handleStopDetection = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/stop-detection', { method: 'POST' });
+      if (response.ok) {
+        setDetecting(false);
+        setSpecificColor('');
+        console.log('Stopped detection');
+      }
+    } catch (error) {
+      console.error('Error stopping detection:', error);
+    }
+  };
+
   // Page Visibility API
   useEffect(() => {
     const handleVisibilityChange = async () => {
@@ -46,13 +85,13 @@ const FaceRecognitionPage = () => {
       
       try {
         if (isVisible) {
-          const response = await fetch('/api/page-visible', { method: 'POST' });
+          const response = await fetch('http://127.0.0.1:8000/page-visible', { method: 'POST' });
           if (response.ok) {
             const data = await response.json();
             setSystemPaused(data.system_paused);
           }
         } else {
-          const response = await fetch('/api/page-hidden', { method: 'POST' });
+          const response = await fetch('http://127.0.0.1:8000/page-hidden', { method: 'POST' });
           if (response.ok) {
             const data = await response.json();
             setSystemPaused(data.system_paused);
@@ -108,7 +147,7 @@ const FaceRecognitionPage = () => {
           
           setLogs(prev => [...prev, {
             timestamp: new Date().toLocaleTimeString(),
-            message: "🌐 Connected to Face Recognition System",
+            message: "🌐 Connected to Color Detection System",
             type: "success"
           }]);
 
@@ -191,6 +230,8 @@ const FaceRecognitionPage = () => {
           setSystemStatus(status);
           setIsConnected(true);
           setSystemPaused(status.system_paused || false);
+          setDetecting(status.detecting || false);
+          setSpecificColor(status.specific_color || '');
         }
       } catch (error) {
         console.error("Status check error:", error);
@@ -234,7 +275,7 @@ const FaceRecognitionPage = () => {
           alignItems: "center"
         }}>
           <h2 style={{ margin: 0, fontSize: "18px", color: "#00ff41" }}>
-            ⚡ Live System Logs
+            🌈 Color Detection Logs
           </h2>
           <div style={{ display: "flex", gap: "10px" }}>
             <span style={{
@@ -267,6 +308,84 @@ const FaceRecognitionPage = () => {
               {websocketConnected ? "🟢 Live" : "🔴 Offline"}
             </span>
           </div>
+        </div>
+
+        {/* Control Panel */}
+        <div style={{
+          backgroundColor: "#2d2d2d",
+          padding: "15px",
+          marginBottom: "15px",
+          borderRadius: "10px",
+          border: "1px solid #444"
+        }}>
+          <div style={{ marginBottom: "12px", fontSize: "14px", fontWeight: "600", color: "#00ff41" }}>
+            🎮 Control Panel
+          </div>
+          
+          <div style={{ display: "flex", gap: "8px", marginBottom: "12px", flexWrap: "wrap" }}>
+            <button
+              onClick={() => handleStartDetection()}
+              disabled={detecting}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: detecting ? "#6c757d" : "#28a745",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: detecting ? "not-allowed" : "pointer",
+                fontSize: "12px"
+              }}
+            >
+              🌈 Detect All Colors
+            </button>
+            
+            <button
+              onClick={handleStopDetection}
+              disabled={!detecting}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: !detecting ? "#6c757d" : "#dc3545",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: !detecting ? "not-allowed" : "pointer",
+                fontSize: "12px"
+              }}
+            >
+              ⏹️ Stop Detection
+            </button>
+          </div>
+
+          <div style={{ marginBottom: "8px", fontSize: "13px", color: "#ccc" }}>
+            🎯 Detect Specific Color:
+          </div>
+          <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+            {availableColors.map(color => (
+              <button
+                key={color}
+                onClick={() => handleStartDetection(color)}
+                disabled={detecting && specificColor === color}
+                style={{
+                  padding: "4px 8px",
+                  backgroundColor: specificColor === color && detecting ? "#ffc107" : "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                  textTransform: "capitalize"
+                }}
+              >
+                {color}
+              </button>
+            ))}
+          </div>
+
+          {detecting && (
+            <div style={{ marginTop: "10px", fontSize: "12px", color: "#00ff41" }}>
+              🔄 Detecting: {specificColor ? specificColor.toUpperCase() : "ALL COLORS"}
+            </div>
+          )}
         </div>
 
         {/* Manual Resume Button */}
@@ -311,19 +430,19 @@ const FaceRecognitionPage = () => {
             border: "1px solid #444"
           }}>
             <div style={{ marginBottom: "5px" }}>
-              🚨 Interaction: {systemStatus.interaction_active ? 
-                <span style={{color: "#f44336"}}>🔴 Active</span> : 
-                <span style={{color: "#4caf50"}}>🟢 Ready</span>
+              🎯 Detection: {systemStatus.detecting ? 
+                <span style={{color: "#4caf50"}}>🟢 Active</span> : 
+                <span style={{color: "#f44336"}}>🔴 Stopped</span>
               }
             </div>
             <div style={{ marginBottom: "5px" }}>
-              👥 Known Persons: <span style={{color: "#81c784"}}>{systemStatus.known_persons || 0}</span>
+              🌈 Available Colors: <span style={{color: "#81c784"}}>{availableColors.length}</span>
             </div>
             <div style={{ marginBottom: "5px" }}>
-              🔄 Processed: <span style={{color: "#64b5f6"}}>{systemStatus.processed_strangers || 0}</span>
+              📹 Camera: <span style={{color: "#64b5f6"}}>{systemStatus.camera_available ? "🟢 Ready" : "🔴 Offline"}</span>
             </div>
             <div>
-              📹 Video Clients: <span style={{color: "#ba68c8"}}>{systemStatus.active_video_clients || 0}</span>
+              🌐 Clients: <span style={{color: "#ba68c8"}}>{systemStatus.connected_clients || 0}</span>
             </div>
           </div>
         )}
@@ -348,7 +467,7 @@ const FaceRecognitionPage = () => {
             }}>
               📡 Waiting for system logs...
               <div style={{ fontSize: "12px", marginTop: "10px" }}>
-                {systemPaused ? "Click Resume button to start" : "Face recognition system will start automatically"}
+                {systemPaused ? "Click Resume button to start" : "Color detection system will start automatically"}
               </div>
             </div>
           ) : (
@@ -363,20 +482,16 @@ const FaceRecognitionPage = () => {
                   [{log.timestamp}]
                 </span>
                 <span style={{
-                  color: log.type === "stranger" ? "#ff6b6b" :
-                         log.type === "recognition" ? "#51cf66" :
-                         log.type === "enrollment" ? "#339af0" :
+                  color: log.type === "detection" ? "#ff6b6b" :
+                         log.type === "system" ? "#51cf66" :
                          log.type === "error" ? "#ff6b6b" :
                          log.type === "success" ? "#51cf66" :
                          log.type === "warning" ? "#ffd43b" :
                          log.type === "tts" ? "#da77f2" :
                          log.type === "voice" ? "#91a7ff" :
-                         log.type === "user_input" ? "#ffb84d" :
-                         log.type === "detection" ? "#ff8787" :
-                         log.type === "system" ? "#74c0fc" :
                          log.type === "paused" ? "#adb5bd" : "#ffffff",
-                  fontSize: log.type === "stranger" || log.type === "detection" ? "15px" : "14px",
-                  fontWeight: log.type === "stranger" || log.type === "detection" ? "600" : "normal"
+                  fontSize: log.type === "detection" ? "15px" : "14px",
+                  fontWeight: log.type === "detection" ? "600" : "normal"
                 }}>
                   {log.message}
                 </span>
@@ -422,14 +537,15 @@ const FaceRecognitionPage = () => {
             marginBottom: "10px",
             fontSize: "24px"
           }}>
-            ⚡ Face Recognition System
+            🌈 Color Detection System
           </h1>
           
           <div style={{ 
             marginBottom: "20px",
             display: "flex",
             justifyContent: "center",
-            gap: "10px"
+            gap: "10px",
+            flexWrap: "wrap"
           }}>
             <span style={{
               padding: "8px 16px",
@@ -441,6 +557,19 @@ const FaceRecognitionPage = () => {
             }}>
               {(isConnected && !systemPaused) ? "🟢 System Active" : systemPaused ? "⏸️ System Paused" : "🔴 Backend Offline"}
             </span>
+            
+            {detecting && (
+              <span style={{
+                padding: "8px 16px",
+                borderRadius: "20px",
+                fontSize: "14px",
+                fontWeight: "bold",
+                backgroundColor: "#007bff",
+                color: "white"
+              }}>
+                🎯 {specificColor ? specificColor.toUpperCase() : "ALL COLORS"}
+              </span>
+            )}
             
             {systemPaused && (
               <button
@@ -478,6 +607,25 @@ const FaceRecognitionPage = () => {
           </div>
         </div>
 
+        {/* Voice Commands Info */}
+        <div style={{
+          backgroundColor: "#e3f2fd",
+          padding: "15px",
+          borderRadius: "10px",
+          marginBottom: "20px",
+          width: "100%",
+          maxWidth: "640px"
+        }}>
+          <h3 style={{ margin: "0 0 10px 0", color: "#1976d2", fontSize: "16px" }}>
+            🎤 Voice Commands
+          </h3>
+          <div style={{ fontSize: "14px", color: "#333" }}>
+            <div>• "detect colors" - Start detecting all colors</div>
+            <div>• "detect [color]" - Detect specific color (red, blue, etc.)</div>
+            <div>• "stop" - Stop detection</div>
+          </div>
+        </div>
+
         {/* Camera Feed */}
         {isConnected ? (
           <div style={{
@@ -489,7 +637,7 @@ const FaceRecognitionPage = () => {
           }}>
             <img
               src="http://127.0.0.1:8000/video_feed"
-              alt="Live Face Recognition Feed"
+              alt="Live Color Detection Feed"
               style={{
                 border: "3px solid #333",
                 borderRadius: "10px",
@@ -507,7 +655,7 @@ const FaceRecognitionPage = () => {
               color: "#666",
               fontSize: "14px"
             }}>
-              🎥 Real-time face detection and recognition
+              🎥 Real-time color detection and recognition
             </div>
           </div>
         ) : (
@@ -520,7 +668,7 @@ const FaceRecognitionPage = () => {
             boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
           }}>
             <h3>📡 Backend Offline</h3>
-            <p>Please start the face recognition server:</p>
+            <p>Please start the color detection server:</p>
             <code style={{
               backgroundColor: "#e9ecef",
               padding: "10px",
@@ -537,4 +685,4 @@ const FaceRecognitionPage = () => {
   );
 };
 
-export default FaceRecognitionPage;
+export default ColorDetectionPage;

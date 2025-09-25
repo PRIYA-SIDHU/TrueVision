@@ -1,10 +1,13 @@
 import React from "react";
 import styles from "./letsfind.module.css";
 import AnimatedSection from "./animated";
+import { useNavigate } from "react-router-dom";
 
-const LetsFind = () => (
- 
-   <AnimatedSection
+
+const letsfind = () => {
+  const navigate = useNavigate()
+  return (
+    <AnimatedSection
 
    left = {
     <div className={styles.left}>
@@ -22,12 +25,14 @@ const LetsFind = () => (
       <p className={styles.description}>
         Explore the world of discovery with Lets Find. Search for interesting facts, uncover hidden details, and expand your knowledge through an interactive and engaging experience tailored for curious minds.
       </p>
-      <button className={styles.ctaButton}>
+       <button className={styles.ctaButton}
+        onClick={() => navigate("/color")}>
       colour detection
       </button>
     </div>
    }
   />
-);
+  )
+}
 
-export default LetsFind;
+export default letsfind
