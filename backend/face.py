@@ -332,7 +332,7 @@ def generate_frames():
         # Check if camera opened successfully
         if not cap.isOpened():
             log_to_terminal_and_web_sync("❌ Failed to open camera", "error")
-            return
+            return 
         
         modelFile = "res10_300x300_ssd_iter_140000.caffemodel"
         configFile = "deploy.prototxt"
