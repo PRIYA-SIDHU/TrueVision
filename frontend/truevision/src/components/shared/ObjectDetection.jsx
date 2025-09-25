@@ -1,8 +1,10 @@
 import React from "react";
 import styles from "./objectdetection.module.css";
 import AnimatedSection from "./animated";
+import { useNavigate } from "react-router-dom";
 
 const ObjectDetection = () => {
+  const navigate = useNavigate()
    return (
     <AnimatedSection
       left={
@@ -21,7 +23,9 @@ const ObjectDetection = () => {
           <p className={styles.description}>
             Train and deploy models capable of identifying multiple objects within images or video. This section helps you understand the basics of object detection, apply pre-trained models, and visualize bounding boxes right in your browser.
           </p>
-          <button className={styles.ctaButton}>Try Object Detection</button>
+          <button className={styles.ctaButton}
+          onClick={()=>navigate('/object')}
+          >Try Object Detection</button>
         </>
       }
     />
