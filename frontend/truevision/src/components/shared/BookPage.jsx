@@ -327,78 +327,7 @@ const PDFReaderPage = () => {
           </div>
         </div>
 
-        {/* Current Reading Status */}
-        {status?.is_reading && (
-          <div style={{
-            backgroundColor: "#e3f2fd",
-            padding: "20px",
-            borderRadius: "15px",
-            marginBottom: "30px",
-            border: "2px solid #1976d2"
-          }}>
-            <div style={{ 
-              display: "flex", 
-              justifyContent: "space-between", 
-              alignItems: "center",
-              marginBottom: "15px"
-            }}>
-              <div>
-                <div style={{ 
-                  fontWeight: "bold", 
-                  color: "#1976d2", 
-                  fontSize: "18px",
-                  marginBottom: "5px"
-                }}>
-                  🎧 Currently Reading: {status.current_pdf}
-                </div>
-                <div style={{ 
-                  fontSize: "16px", 
-                  color: "#333",
-                  display: "flex",
-                  gap: "20px"
-                }}>
-                  <span>📄 Page {status.current_page} of {status.total_pages}</span>
-                  {status.paused && <span style={{color: "#f57c00", fontWeight: "bold"}}>⏸️ PAUSED</span>}
-                </div>
-              </div>
-            </div>
-
-            {/* Reading Controls */}
-            <div style={{ display: "flex", gap: "15px" }}>
-              <button
-                onClick={() => controlReading('pause')}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: status.paused ? "#28a745" : "#ffc107",
-                  color: status.paused ? "white" : "black",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold"
-                }}
-              >
-                {status.paused ? "▶️ Resume Reading" : "⏸️ Pause Reading"}
-              </button>
-              
-              <button
-                onClick={() => controlReading('stop')}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                  fontWeight: "bold"
-                }}
-              >
-                ⏹️ Stop Reading
-              </button>
-            </div>
-          </div>
-        )}
+       
 
         {/* Upload Area */}
         <div
