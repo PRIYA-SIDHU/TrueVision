@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import styles from "./currencydetector.module.css";
 import AnimatedSection from "./animated";
 import currencyimg from "../../assets/images/currencydetector.png";

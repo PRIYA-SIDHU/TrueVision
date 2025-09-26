@@ -26,22 +26,21 @@ body, html {
   perspective: 1000px;
 }
 
-/* ================= TRUE ================= */
+
 .true {
   position: absolute;
   top: 12vh;
   left: 40%;
-  font-size: 15vw; /* responsive font size */
+  font-size: 15vw; 
   font-weight: bold;
   font-family: "Poppins Bold", sans-serif;
   display: inline-block;
 }
 
-/* ================= VISION ================= */
 .vision {
   position: absolute;
-  top: 30vh; /* TRUE ke neeche */
-  left: 40%; /* medium screen me adjust kar sakte ho */
+  top: 30vh; 
+  left: 40%;
   transform: translateX(-10%);
   white-space: nowrap;
   font-size: clamp(6rem, 20vw, 20rem);
@@ -71,14 +70,14 @@ body, html {
   text-shadow: 0 0 0.5vw #ff0, 0 0 2vw #ff0, 0 0 3vw #ff0;
 }
 
-/* ================= FLOWER ================= */
+
 .flower {
-  /* background-color: red; */
+
   height: 35%;
   position: absolute;
   vertical-align: middle;
   margin-top:7%;
-  left: 15vw; /* ye ensure karega ki letters wrap na ho */
+  left: 15vw; 
   font-size: 7vw;
   opacity: 0;
   pointer-events: none;
@@ -86,7 +85,7 @@ body, html {
   transform-origin: center;
 }
 
-/* ================= LETTERS ================= */
+
 .letter-t,
 .letter-e,
 .letter-u {
@@ -98,9 +97,8 @@ body, html {
   opacity: 0;
 }
 
-/* ================= RESPONSIVE ================= */
 
-/* 🔹 Mobile */
+
 @media (max-width: 480px) {
   .true {
     top: 15vh;
@@ -118,11 +116,11 @@ body, html {
     bottom: 80vh;
     left: 15%;
     font-size: 26vw;
-    background-color: red;
+   
   }
 }
 
-/* 🔹 Tablet */
+
 @media (min-width: 481px) and (max-width: 768px) {
   .true {
     bottom: 50vh;
@@ -143,7 +141,7 @@ body, html {
   }
 }
 
-/* 🔹 Desktop (default) */
+
 @media (min-width: 769px) and (max-width: 1024px) {
   .true {
     font-size: 16vw;
