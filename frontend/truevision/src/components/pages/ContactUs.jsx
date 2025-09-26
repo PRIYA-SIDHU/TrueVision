@@ -1,48 +1,94 @@
 import React, { useState } from "react";
-import styles from './ContactUs.module.css';
+import styles from "./ContactUs.module.css";
 import { motion } from "framer-motion";
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
-    name: "",   
+    name: "",
     email: "",
     phone: "",
-    message: ""
+    message: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
   const [thankYou, setThankYou] = useState(false);
 
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
 
-    if (value.trim() !== "" && (name !== "phone" || /^\d{10}$/.test(value.trim()))) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+
+    // Clear error as soon as input is valid
+    if (name === "name" && value.trim() !== "") {
+      setErrors((prev) => ({ ...prev, name: "" }));
+    }
+    if (name === "email" && value.trim() !== "") {
+      setErrors((prev) => ({ ...prev, email: "" }));
+    }
+    if (name === "phone") {
+      if (/^\d{10}$/.test(value.trim())) {
+        setErrors((prev) => ({ ...prev, phone: "" }));
+      }
+    }
+    if (name === "message" && value.trim() !== "") {
+      setErrors((prev) => ({ ...prev, message: "" }));
     }
   };
 
+  // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim()) newErrors.email = "Email is required";
+    let newErrors = { name: "", email: "", phone: "", message: "" };
+    let formIsValid = true;
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone is required";
-    } else if (!/^\d{10}$/.test(formData.phone.trim())) {
-      newErrors.phone = "Enter a valid 10-digit phone number";
+    // Name check
+    if (formData.name.trim() === "") {
+      newErrors.name = "Name is required";
+      formIsValid = false;
     }
 
-    if (!formData.message.trim()) newErrors.message = "Message is required";
+    // Email check
+    if (formData.email.trim() === "") {
+      newErrors.email = "Email is required";
+      formIsValid = false;
+    }
+
+    // Phone check
+    if (formData.phone.trim() === "") {
+      newErrors.phone = "Phone is required";
+      formIsValid = false;
+    } else if (!/^\d{10}$/.test(formData.phone.trim())) {
+      newErrors.phone = "Enter a valid 10-digit phone number";
+      formIsValid = false;
+    }
+
+    // Message check
+    if (formData.message.trim() === "") {
+      newErrors.message = "Message is required";
+      formIsValid = false;
+    }
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
+    // If no errors
+    if (formIsValid) {
       setThankYou(true);
       setFormData({ name: "", email: "", phone: "", message: "" });
-      setTimeout(() => setThankYou(false), 3000);
+
+      setTimeout(() => {
+        setThankYou(false);
+      }, 3000);
     }
   };
 
@@ -107,7 +153,11 @@ export default function ContactUs() {
           {errors.message && <div className={styles.error}>{errors.message}</div>}
 
           <button type="submit" className={styles.sendBtn}>Send Message</button>
-          {thankYou && <div className={styles.thankyouMsg}>Thank you! Your message has been sent.</div>}
+          {thankYou && (
+            <div className={styles.thankyouMsg}>
+              Thank you! Your message has been sent.
+            </div>
+          )}
         </motion.form>
 
         <motion.div
@@ -118,7 +168,7 @@ export default function ContactUs() {
         >
           <h2>Get in Touch</h2>
           <div className={styles.infoCard}>📧 Sunny@gmail.com</div>
-          <div className={styles.infoCard}>📞 +91 78891 88142</div>
+          <div className={styles.infoCard}>📞 +91 78845 88142</div>
           <div className={styles.infoCard}>📍 Punjab, India</div>
         </motion.div>
       </div>
