@@ -1,6 +1,6 @@
 """
 ===============================
-ENGLISH VISION VOICE ASSISTANT - WITH CONVERSATION LOGGING
+ENGLISH VISION VOICE ASSISTANT - FIXED CONVERSATION LOGGING
 ===============================
 """
 
@@ -170,12 +170,13 @@ def create_tts_engine():
         log_to_terminal_and_web_sync(f"⚠️ TTS Engine creation error: {e}", "error")
         return None
 
-def speak_text_directly(text, speaker="assistant"):
+def speak_text_directly(text, speaker="assistant", log_conversation_flag=True):
     """Direct TTS execution in separate thread"""
     def _speak():
         try:
-            # Log the conversation
-            log_conversation(speaker, text)
+            # Log the conversation BEFORE speaking
+            if log_conversation_flag:
+                log_conversation(speaker, text)
             
             engine = create_tts_engine()
             if engine is None:
@@ -206,9 +207,9 @@ def speak_text_directly(text, speaker="assistant"):
     except Exception as e:
         log_to_terminal_and_web_sync(f"❌ TTS thread creation error: {e}", "error")
 
-def speak_text(text, speaker="assistant"):
+def speak_text(text, speaker="assistant", log_conversation_flag=True):
     """Main speak function with conversation logging"""
-    speak_text_directly(text, speaker)
+    speak_text_directly(text, speaker, log_conversation_flag)
 
 # -------------------- UTILITY FUNCTIONS --------------------
 def determine_side_from_angle(angle_degrees, threshold=ANGLE_THRESHOLD):
@@ -357,7 +358,12 @@ def voice_recognition_thread():
             recognizer.adjust_for_ambient_noise(microphone, duration=2)
         
         log_to_terminal_and_web_sync("🎤 Voice recognition initialized", "voice")
-        speak_text("English Vision Assistant is ready! Say 'help' for commands.")
+        
+        # Wait a bit for WebSocket connections to establish
+        time.sleep(2)
+        
+        # Initial greeting with conversation logging
+        speak_text("Hello! English Vision Assistant is ready. Say 'help' for available commands.", "assistant", True)
         
         while not stop_program_event.is_set():
             try:
@@ -412,23 +418,23 @@ def process_voice_command(command_text):
     # Process different command types
     if any(keyword in command_text for keyword in ['screen', 'see', 'describe', 'everything', 'what']):
         if not current_scene:
-            speak_text("The screen appears to be empty")
+            speak_text("The screen appears to be empty", "assistant", True)
             return
         
         log_to_terminal_and_web_sync(f"📊 Found {len(current_scene)} objects on screen", "detection")
-        speak_text(f"I can see {len(current_scene)} objects on screen")
+        speak_text(f"I can see {len(current_scene)} objects on screen", "assistant", True)
         
         time.sleep(1)  # Short pause between sentences
         
         for side in ['left', 'center', 'right']:
             side_objects = [obj for obj in current_scene if obj['side'] == side]
             if side_objects:
-                speak_text(f"On the {side}: {format_object_list(side_objects)}")
+                speak_text(f"On the {side}: {format_object_list(side_objects)}", "assistant", True)
                 time.sleep(0.5)
         
         if current_scene:
             closest_object = min(current_scene, key=lambda x: x['distance_meters'])
-            speak_text(f"The closest object is {closest_object['class']} at {closest_object['distance_meters']:.1f} meters")
+            speak_text(f"The closest object is {closest_object['class']} at {closest_object['distance_meters']:.1f} meters", "assistant", True)
     
     elif any(keyword in command_text for keyword in ['left', 'right', 'center', 'front', 'middle']):
         target_side = None
@@ -440,39 +446,39 @@ def process_voice_command(command_text):
         if target_side:
             side_objects = [obj for obj in current_scene if obj['side'] == target_side]
             if side_objects:
-                speak_text(f"On the {target_side} side I see: {format_object_list(side_objects)}")
+                speak_text(f"On the {target_side} side I see: {format_object_list(side_objects)}", "assistant", True)
             else:
-                speak_text(f"I don't see any objects on the {target_side} side")
+                speak_text(f"I don't see any objects on the {target_side} side", "assistant", True)
     
     elif any(keyword in command_text for keyword in ['how far', 'distance', 'far is']):
         if current_scene:
             closest_object = min(current_scene, key=lambda x: x['distance_meters'])
-            speak_text(f"The closest object is {closest_object['class']} at {closest_object['distance_meters']:.1f} meters away")
+            speak_text(f"The closest object is {closest_object['class']} at {closest_object['distance_meters']:.1f} meters away", "assistant", True)
         else:
-            speak_text("I don't see any objects to measure distance to")
+            speak_text("I don't see any objects to measure distance to", "assistant", True)
     
     elif any(keyword in command_text for keyword in ['how many', 'count', 'total']):
         if current_scene:
-            speak_text(f"I can see a total of {len(current_scene)} objects")
+            speak_text(f"I can see a total of {len(current_scene)} objects", "assistant", True)
             time.sleep(0.5)
-            speak_text(f"They are: {format_object_list(current_scene)}")
+            speak_text(f"They are: {format_object_list(current_scene)}", "assistant", True)
         else:
-            speak_text("I don't see any objects to count")
+            speak_text("I don't see any objects to count", "assistant", True)
     
     elif any(keyword in command_text for keyword in ['closest', 'nearest']):
         if current_scene:
             closest_object = min(current_scene, key=lambda x: x['distance_meters'])
-            speak_text(f"The closest object is {closest_object['class']} at {closest_object['distance_meters']:.1f} meters")
+            speak_text(f"The closest object is {closest_object['class']} at {closest_object['distance_meters']:.1f} meters", "assistant", True)
         else:
-            speak_text("I don't see any objects on screen")
+            speak_text("I don't see any objects on screen", "assistant", True)
     
     elif any(keyword in command_text for keyword in ['help', 'commands', 'what can']):
         log_to_terminal_and_web_sync("ℹ️ Help command requested", "info")
-        speak_text("You can ask me: what's on screen, what's on the left or right, how far is something, how many objects, or what's the closest object")
+        speak_text("I can help you with these commands: what's on screen, what's on the left or right, how far is something, how many objects, what's the closest object", "assistant", True)
     
     else:
         log_to_terminal_and_web_sync(f"❓ Unknown command: {command_text}", "warning")
-        speak_text("I'm not sure what you're looking for. Try asking 'what's on screen' or say 'help' for available commands")
+        speak_text("I'm not sure what you're looking for. Try asking 'what's on screen' or say 'help' for available commands", "assistant", True)
 
 # -------------------- SYSTEM INITIALIZATION --------------------
 object_detector = None
@@ -483,10 +489,6 @@ def initialize_system():
     global object_detector, depth_estimator, video_capture
     
     log_to_terminal_and_web_sync("🚀 Initializing English Vision Voice Assistant", "system")
-    
-    # Test TTS first
-    log_to_terminal_and_web_sync("🔊 Testing TTS system...", "system")
-    speak_text("TTS system test successful")
     
     # Initialize object detector
     object_detector = ObjectDetector()
@@ -601,7 +603,7 @@ def generate_frames():
                     
                     # Warning with conversation logging
                     warning_message = f"{objclass} is very close at {actual_distance:.1f} meters!"
-                    speak_text(warning_message, "warning")
+                    speak_text(warning_message, "warning", True)
                     
                     last_warning_time_class[objclass] = current_time
         
@@ -727,7 +729,7 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     import uvicorn
-    print("🎥🗣️ English Vision Voice Assistant - WITH CONVERSATION LOGGING")
+    print("🎥🗣️ English Vision Voice Assistant - WITH CONVERSATION LOGGING (FIXED)")
     print("🚀 Features:")
     print("   📹 Real-time object detection with YOLO")
     print("   🎤 Voice commands and TTS responses")
@@ -735,5 +737,6 @@ if __name__ == "__main__":
     print("   📱 Live WebSocket logging")
     print("   🌐 React frontend integration")
     print("   🔊 Working TTS warnings for close objects!")
-    print("   💬 CONVERSATION LOGGING - User & Assistant talks")
+    print("   💬 CONVERSATION LOGGING - User & Assistaurknt talks")
+    print("   ✅ FIXED: Initial greeting conversation visible!")
     uvicorn.run(app, host="127.0.0.1", port=8000)

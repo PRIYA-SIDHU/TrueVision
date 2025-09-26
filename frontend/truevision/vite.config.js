@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -7,26 +6,20 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    port: 5173,
+    host: true,
     proxy: {
-      // HTTP video feed
-      '/video_feed': 'http://localhost:8000',
-      // WebSocket logs
-      '/ws/logs': {
-        target: 'ws://localhost:8000',
-        ws: true
+      // Only proxy API calls, not WebSocket or video
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true
   }
 });
-=======
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react(),
-     tailwindcss()
-  ],
-   
-})
->>>>>>> upstream/main
