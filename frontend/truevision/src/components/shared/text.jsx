@@ -1,8 +1,6 @@
 import styles from "./text.module.css";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import colorspin from "../../assets/images/colorspin.png";
-import eyeImg from "../../assets/images/eye.png";
 
 export default function Text() {
   const letterT = useRef(null);
@@ -10,14 +8,12 @@ export default function Text() {
   const letterU = useRef(null);
   const letterEBounce = useRef(null);
   const flower = useRef(null);
-  const spinner = useRef(null);
   const visionV = useRef(null);
   const visionI1 = useRef(null);
   const visionS = useRef(null);
   const visionI2 = useRef(null);
   const visionO = useRef(null);
   const visionN = useRef(null);
-  const eye = useRef(null);
 
   useEffect(() => {
     const tl = gsap.timeline();
@@ -49,13 +45,6 @@ export default function Text() {
         onComplete: () => { letterE.current.innerText = "R"; },
       })
       .to(letterE.current, { opacity: 1, duration: 0.2 });
-
-    // Spinner
-    tl.fromTo(
-      spinner.current,
-      { x: -200, rotation: 0, opacity: 0 },
-      { x: 0, rotation: 720, opacity: 1, duration: 1, ease: "power2.out" }
-    ).to(spinner.current, { rotation: "+=360", repeat: -1, duration: 1.5, ease: "linear" });
 
     // U
     tl.fromTo(
@@ -112,39 +101,12 @@ export default function Text() {
       { x: 0, rotation: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }
     );
 
-    const animateEye = () => {
-      if (visionO.current && eye.current) {
-        let eyeSize;
-        if (window.innerWidth <= 480) {
-          eyeSize = visionO.current.offsetWidth * 0.4;
-        } else if (window.innerWidth <= 768) {
-          eyeSize = visionO.current.offsetWidth * 0.5;
-        } else {
-          eyeSize = visionO.current.offsetWidth * 0.6;
-        }
-
-        const oX = visionO.current.offsetLeft + visionO.current.offsetWidth / 2 - eyeSize / 2;
-        const oY = visionO.current.offsetTop + visionO.current.offsetHeight / 2 - eyeSize / 2;
-
-        gsap.fromTo(
-          eye.current,
-          { x: -500, y: oY, width: eyeSize, height: eyeSize, opacity: 0, position: "absolute" },
-          { x: oX, y: oY, width: eyeSize, height: eyeSize, opacity: 1, duration: 1.2, ease: "power4.out" }
-        );
-      }
-    };
-
-    visionTimeline.add(animateEye, "+=0.1");
-
     visionTimeline.fromTo(
       visionN.current,
       { x: 200, opacity: 0, rotationY: 180 },
       { x: 0, opacity: 1, rotationY: 0, duration: 0.7, ease: "back.out(1.7)" },
       "+=0.2"
     );
-
-    window.addEventListener("resize", animateEye);
-    return () => window.removeEventListener("resize", animateEye);
   }, []);
 
   return (
@@ -166,8 +128,6 @@ export default function Text() {
       </div>
 
       <div ref={flower} className={styles.flower}>🌸</div>
-    
-      <img ref={spinner} src={colorspin} className={styles.spinner} alt="spinner" />
     </div>
   );
 }

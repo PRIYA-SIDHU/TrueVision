@@ -2,13 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./currencydetector.module.css";
 import AnimatedSection from "./animated";
+import { useNavigate } from "react-router-dom";
 
 const CurrencyDetector = () => {
   const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate("/currency-detector");
-  };
 
   return (
     <AnimatedSection
@@ -20,10 +17,14 @@ const CurrencyDetector = () => {
               Take your skills further with code challenges and project tutorials.
             </span>
             <p>
-              Apply what you learn to real-world problems with hands-on challenges designed to reinforce your understanding and grow your practical coding ability.
+              Apply what you learn to real-world problems with hands-on challenges
+              designed to reinforce your understanding and grow your practical coding ability.
             </p>
-            <button className={styles.ctaButton} onClick={handleClick}>
-              Open Currency Detector
+            <button
+              className={styles.ctaButton}
+               
+            >
+              currency detector
             </button>
           </div>
         </div>
@@ -37,7 +38,8 @@ const CurrencyDetector = () => {
           />
         </div>
       }
-    />
+
+     />
   );
 };
 
