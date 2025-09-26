@@ -36,7 +36,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for simplicity
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,99 +45,17 @@ app.add_middleware(
 
 executor = ThreadPoolExecutor(max_workers=4)
 
-# -------------------- PAGE VISIBILITY CONTROL --------------------
+# -------------------- GLOBAL VARIABLES --------------------
 is_page_visible = True
 active_video_clients = 0
 system_paused = False
-
-
-# -------------------- ENHANCED WEBSOCKET CONNECTION MANAGER --------------------
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-        self.connection_lock = asyncio.Lock()
-
-    async def connect(self, websocket: WebSocket):
-        try:
-            await websocket.accept()
-            async with self.connection_lock:
-                self.active_connections.append(websocket)
-            await self.broadcast_log("🌐 Client connected to real-time logs", "success")
-            print(f"✅ WebSocket connected. Total: {len(self.active_connections)}")
-        except Exception as e:
-            print(f"❌ WebSocket connect error: {e}")
-
-    async def disconnect(self, websocket: WebSocket):
-        try:
-            async with self.connection_lock:
-                if websocket in self.active_connections:
-                    self.active_connections.remove(websocket)
-            print(f"🔌 WebSocket disconnected. Total: {len(self.active_connections)}")
-        except Exception as e:
-            print(f"❌ WebSocket disconnect error: {e}")
-
-    async def broadcast_log(self, message: str, log_type: str = "info"):
-        if not self.active_connections:
-            return
-            
-        log_data = {
-            "timestamp": time.strftime("%H:%M:%S"),
-            "message": message,
-            "type": log_type
-        }
-        
-        disconnected = []
-        async with self.connection_lock:
-            connections_copy = self.active_connections.copy()
-            
-        for connection in connections_copy:
-            try:
-                await connection.send_text(json.dumps(log_data))
-            except Exception as e:
-                print(f"⚠️ Failed to send to WebSocket: {e}")
-                disconnected.append(connection)
-        
-        # Remove disconnected clients
-        if disconnected:
-            async with self.connection_lock:
-                for connection in disconnected:
-                    if connection in self.active_connections:
-                        self.active_connections.remove(connection)
-
-
-manager = ConnectionManager()
-
-
-# -------------------- FIXED LOGGING FUNCTION --------------------
-def log_to_terminal_and_web_sync(message: str, log_type: str = "info"):
-    """Synchronous logging function for non-async contexts"""
-    print(f"📱 {message}")  # Terminal output
-    
-    # Try to send to web, but don't fail if no event loop
-    try:
-        # Get current event loop if exists
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # Schedule the async task
-            asyncio.create_task(manager.broadcast_log(message, log_type))
-    except RuntimeError:
-        # No event loop running, just log to terminal
-        pass
-
-
-async def log_to_terminal_and_web_async(message: str, log_type: str = "info"):
-    """Async logging function for async contexts"""
-    print(f"📱 {message}")  # Terminal output
-    await manager.broadcast_log(message, log_type)  # Web output
-
-
-# -------------------- GLOBALS --------------------
 stranger_interaction_active = False
 stranger_processed = set()
 STRANGER_COOLDOWN_DURATION = 45
+detected_persons = set()  # Track currently detected persons
 
 
-url = "http://10.215.67.197:8080/video"
+url = "http://10.200.19.61:8080/video"
 
 
 # -------------------- DB CONNECTION --------------------
@@ -159,12 +77,66 @@ conn.commit()
 ibed = imgbeddings()
 
 
-# -------------------- FUNCTIONS WITH PAUSE CONTROL --------------------
+# -------------------- WEBSOCKET CONNECTION MANAGER --------------------
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+        self.connection_lock = asyncio.Lock()
+
+    async def connect(self, websocket: WebSocket):
+        try:
+            await websocket.accept()
+            async with self.connection_lock:
+                self.active_connections.append(websocket)
+            print(f"✅ WebSocket connected. Total: {len(self.active_connections)}")
+        except Exception as e:
+            print(f"❌ WebSocket connect error: {e}")
+
+    async def disconnect(self, websocket: WebSocket):
+        try:
+            async with self.connection_lock:
+                if websocket in self.active_connections:
+                    self.active_connections.remove(websocket)
+            print(f"🔌 WebSocket disconnected. Total: {len(self.active_connections)}")
+        except Exception as e:
+            print(f"❌ WebSocket disconnect error: {e}")
+
+    async def broadcast_detected_persons(self, persons_list):
+        if not self.active_connections:
+            return
+            
+        data = {
+            "type": "detected_persons",
+            "persons": persons_list,
+            "timestamp": time.strftime("%H:%M:%S")
+        }
+        
+        disconnected = []
+        async with self.connection_lock:
+            connections_copy = self.active_connections.copy()
+            
+        for connection in connections_copy:
+            try:
+                await connection.send_text(json.dumps(data))
+            except Exception as e:
+                disconnected.append(connection)
+        
+        if disconnected:
+            async with self.connection_lock:
+                for connection in disconnected:
+                    if connection in self.active_connections:
+                        self.active_connections.remove(connection)
+
+
+manager = ConnectionManager()
+
+
+# -------------------- UTILITY FUNCTIONS --------------------
 def preprocess_face_image(face_img):
     try:
         return cv2.resize(face_img, (112, 112))
     except Exception as e:
-        log_to_terminal_and_web_sync(f"⚠️ Preprocessing error: {e}", "warning")
+        print(f"⚠️ Preprocessing error: {e}")
         return face_img
 
 
@@ -197,50 +169,39 @@ def init_tts():
 
 def tts_speak_threaded(text):
     if system_paused:
-        log_to_terminal_and_web_sync(f"🔇 TTS Paused (system paused): {text}", "paused")
         return
         
     try:
         engine = init_tts()
-        log_to_terminal_and_web_sync(f"🔊 TTS Speaking: {text}", "tts")
         engine.say(text)
         engine.runAndWait()
         engine.stop()
     except Exception as e:
-        log_to_terminal_and_web_sync(f"⚠️ TTS error: {e}", "error")
+        print(f"⚠️ TTS error: {e}")
 
 
 def listen_voice_threaded():
     if system_paused:
-        log_to_terminal_and_web_sync("🔇 Voice recognition paused (system paused)", "paused")
         return None
         
     try:
-        log_to_terminal_and_web_sync("🎤 Starting voice recognition...", "voice")
-        
         r = sr.Recognizer()
         r.energy_threshold = 400
         r.dynamic_energy_threshold = True
         
         with sr.Microphone() as source:
-            log_to_terminal_and_web_sync("🎤 Adjusting for ambient noise...", "voice")
             r.adjust_for_ambient_noise(source, duration=1)
-            log_to_terminal_and_web_sync("🎤 Listening for your response...", "voice")
             audio = r.listen(source, timeout=10, phrase_time_limit=5)
             
-        log_to_terminal_and_web_sync("🎤 Processing your speech...", "voice")
         text = r.recognize_google(audio).lower().strip()
-        log_to_terminal_and_web_sync(f"✅ You said: '{text}'", "user_input")
         return text
         
     except sr.WaitTimeoutError:
-        log_to_terminal_and_web_sync("⚠️ Voice timeout - no speech detected", "warning")
         return None
     except sr.UnknownValueError:
-        log_to_terminal_and_web_sync("⚠️ Could not understand your speech", "warning")
         return None
     except Exception as e:
-        log_to_terminal_and_web_sync(f"⚠️ Voice recognition error: {e}", "error")
+        print(f"⚠️ Voice recognition error: {e}")
         return None
 
 
@@ -267,8 +228,6 @@ def simple_cosine_similarity(a, b):
 
 def enroll_new_person_threaded(person_name, face_img):
     try:
-        log_to_terminal_and_web_sync(f"📝 Starting enrollment for: {person_name}", "enrollment")
-        
         processed_face = preprocess_face_image(face_img)
         
         person_folder = os.path.join(DATASET_PATH, person_name)
@@ -276,8 +235,6 @@ def enroll_new_person_threaded(person_name, face_img):
         
         face_path = os.path.join(person_folder, f"{person_name}_{int(time.time())}.jpg")
         cv2.imwrite(face_path, processed_face)
-        
-        log_to_terminal_and_web_sync(f"📸 Face image saved: {face_path}", "enrollment")
         
         img = Image.fromarray(cv2.cvtColor(processed_face, cv2.COLOR_BGR2RGB))
         emb = ibed.to_embeddings(img)[0]
@@ -288,25 +245,20 @@ def enroll_new_person_threaded(person_name, face_img):
         )
         conn.commit()
         
-        log_to_terminal_and_web_sync(f"💾 Database updated with {person_name}'s data", "enrollment")
         tts_speak_threaded(f"{person_name} enrolled successfully")
-        log_to_terminal_and_web_sync(f"✅ {person_name} successfully enrolled!", "success")
+        print(f"✅ {person_name} successfully enrolled!")
         
     except Exception as e:
-        log_to_terminal_and_web_sync(f"❌ Enrollment error: {e}", "error")
+        print(f"❌ Enrollment error: {e}")
         tts_speak_threaded("Error enrolling person")
 
 
 def save_known_stranger_threaded(face_img):
     try:
-        log_to_terminal_and_web_sync("⚠️ Saving person as known stranger", "stranger")
-        
         processed_face = preprocess_face_image(face_img)
         
         stranger_path = os.path.join(KNOWN_STRANGER_PATH, f"stranger_{int(time.time())}.jpg")
         cv2.imwrite(stranger_path, processed_face)
-        
-        log_to_terminal_and_web_sync(f"📸 Stranger image saved: {stranger_path}", "stranger")
         
         img = Image.fromarray(cv2.cvtColor(processed_face, cv2.COLOR_BGR2RGB))
         emb = ibed.to_embeddings(img)[0]
@@ -318,46 +270,38 @@ def save_known_stranger_threaded(face_img):
         conn.commit()
         
         tts_speak_threaded("Saved as known stranger")
-        log_to_terminal_and_web_sync("✅ Person saved as known stranger", "success")
+        print("✅ Person saved as known stranger")
         
     except Exception as e:
-        log_to_terminal_and_web_sync(f"❌ Error saving stranger: {e}", "error")
+        print(f"❌ Error saving stranger: {e}")
 
 
 def handle_stranger_interaction_instant(face_img, face_hash):
     global stranger_interaction_active
     
     if system_paused:
-        log_to_terminal_and_web_sync("⏸️ Stranger interaction paused (system paused)", "paused")
         return
     
     try:
         stranger_interaction_active = True
         stranger_processed.add((face_hash, time.time()))
         
-        log_to_terminal_and_web_sync("🚨 NEW STRANGER DETECTED - Starting interaction!", "stranger")
-        
         tts_speak_threaded("Stranger detected! Say yes to add them or no to skip.")
         
         response = listen_voice_threaded()
         
         if response is None:
-            log_to_terminal_and_web_sync("⚠️ No response received - auto-saving as known stranger", "warning")
             tts_speak_threaded("No response. Auto-saved as known stranger.")
             save_known_stranger_threaded(face_img)
             return
-            
-        log_to_terminal_and_web_sync(f"📝 User response received: '{response}'", "user_input")
         
         if any(word in response for word in ["yes", "add", "enroll"]):
-            log_to_terminal_and_web_sync("✅ User wants to enroll new person", "enrollment")
             tts_speak_threaded("Say the person's name.")
             
             person_name = listen_voice_threaded()
             
             if person_name and len(person_name.strip()) > 1:
                 clean_name = " ".join(word.capitalize() for word in person_name.strip().split())
-                log_to_terminal_and_web_sync(f"📝 Enrolling person as: '{clean_name}'", "enrollment")
                 
                 enroll_new_person_threaded(clean_name, face_img)
                 
@@ -365,44 +309,38 @@ def handle_stranger_interaction_instant(face_img, face_hash):
                 known_names, known_embeddings = load_embeddings_avg()
                 
             else:
-                log_to_terminal_and_web_sync("⚠️ Invalid name received", "warning")
                 tts_speak_threaded("Invalid name. Saved as known stranger.")
                 save_known_stranger_threaded(face_img)
         else:
-            log_to_terminal_and_web_sync("❌ User declined enrollment", "info")
             tts_speak_threaded("Saved as known stranger.")
             save_known_stranger_threaded(face_img)
             
     except Exception as e:
-        log_to_terminal_and_web_sync(f"❌ Stranger interaction error: {e}", "error")
+        print(f"❌ Stranger interaction error: {e}")
         tts_speak_threaded("Error occurred. Saved as known stranger.")
         save_known_stranger_threaded(face_img)
     finally:
         stranger_interaction_active = False
-        log_to_terminal_and_web_sync("✅ Stranger interaction completed", "success")
 
 
-# -------------------- VIDEO PROCESSING WITH CLIENT TRACKING --------------------
+# -------------------- VIDEO PROCESSING --------------------
 def generate_frames():
-    global stranger_interaction_active, known_names, known_embeddings, active_video_clients, system_paused
+    global stranger_interaction_active, known_names, known_embeddings, active_video_clients, system_paused, detected_persons
     
-    # Track active video clients
     active_video_clients += 1
     
     try:
-        log_to_terminal_and_web_sync("🎥 Starting camera and face detection system", "system")
-        
         cap = cv2.VideoCapture(url)
         
         if not cap.isOpened():
-            log_to_terminal_and_web_sync("❌ Failed to open camera", "error")
+            print("❌ Failed to open camera")
             return 
         
         modelFile = "res10_300x300_ssd_iter_140000.caffemodel"
         configFile = "deploy.prototxt"
         
         if not os.path.exists(modelFile) or not os.path.exists(configFile):
-            log_to_terminal_and_web_sync("❌ Model files not found", "error")
+            print("❌ Model files not found")
             return
             
         net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
@@ -412,18 +350,13 @@ def generate_frames():
         
         known_names, known_embeddings = load_embeddings_avg()
         
-        log_to_terminal_and_web_sync(f"📊 System initialized - Threshold: {SIMILARITY_THRESHOLD}", "system")
-        log_to_terminal_and_web_sync(f"👥 Known persons in database: {len([n for n in known_names if n != 'Known Stranger'])}", "system")
-        
         frame_count = 0
+        last_broadcast = 0
         
         while active_video_clients > 0:
             
-            # Pause check
             if system_paused:
                 time.sleep(1)
-                
-                # Create a simple pause frame
                 pause_frame = np.zeros((480, 640, 3), dtype=np.uint8)
                 cv2.putText(pause_frame, "SYSTEM PAUSED", (200, 220), 
                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
@@ -439,10 +372,10 @@ def generate_frames():
                 
             ret, frame = cap.read()
             if not ret:
-                log_to_terminal_and_web_sync("❌ Failed to read frame from camera", "error")
                 break
                 
             frame_count += 1
+            current_detected = set()
             
             if frame_count % 60 == 0:
                 cleanup_processed_strangers()
@@ -498,8 +431,9 @@ def generate_frames():
                     name = best_name
                     color = (0, 255, 0)
                     
-                    if frame_count % 60 == 0:
-                        log_to_terminal_and_web_sync(f"👤 {best_name} recognized (confidence: {best_score:.2f})", "recognition")
+                    # Only add to detected if not "Known Stranger"
+                    if name != "Known Stranger":
+                        current_detected.add(name)
                     
                 else:
                     is_processed = any(processed_hash == face_hash for processed_hash, _ in stranger_processed)
@@ -511,10 +445,7 @@ def generate_frames():
                         name = "🚨 NEW STRANGER!"
                         color = (0, 0, 255)
                         
-                        log_to_terminal_and_web_sync(f"🚨 NEW STRANGER DETECTED! Similarity score: {best_score:.3f}", "detection")
-                        
                         if not stranger_interaction_active and not system_paused:
-                            log_to_terminal_and_web_sync("⚡ Starting INSTANT interaction...", "system")
                             threading.Thread(
                                 target=handle_stranger_interaction_instant,
                                 args=(processed_face.copy(), face_hash),
@@ -527,27 +458,17 @@ def generate_frames():
                 cv2.putText(frame_small, label, (x, y - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
             
-            # Enhanced status display
-            pause_status = "⏸️ PAUSED" if system_paused else "▶️ ACTIVE"
-            status_lines = [
-                f"⚡ REAL-TIME LOGGING {pause_status}",
-                f"THRESHOLD: {SIMILARITY_THRESHOLD}",
-                f"INTERACTION: {'🔴 ACTIVE' if stranger_interaction_active else '🟢 READY'}",
-                f"PROCESSED: {len(stranger_processed)}",
-                f"KNOWN: {len([n for n in known_names if n != 'Known Stranger'])}",
-                f"CLIENTS: {active_video_clients}"
-            ]
-            
-            for i, status in enumerate(status_lines):
-                if i == 0:
-                    color = (255, 0, 0) if system_paused else (0, 255, 255)
-                elif i == 2 and stranger_interaction_active:
-                    color = (0, 0, 255)
-                else:
-                    color = (255, 255, 255)
-                
-                cv2.putText(frame_small, status, (10, 25 + i * 20),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+            # Update detected persons and broadcast if changed
+            if current_detected != detected_persons:
+                detected_persons = current_detected.copy()
+                # Broadcast to WebSocket clients
+                try:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(manager.broadcast_detected_persons(list(detected_persons)))
+                    loop.close()
+                except:
+                    pass
             
             ret, buffer = cv2.imencode('.jpg', frame_small)
             if ret:
@@ -558,66 +479,33 @@ def generate_frames():
         cap.release()
         
     except Exception as e:
-        log_to_terminal_and_web_sync(f"❌ Camera error: {e}", "error")
+        print(f"❌ Camera error: {e}")
     finally:
         active_video_clients -= 1
-        if active_video_clients <= 0:
-            log_to_terminal_and_web_sync("⏹️ No active video clients", "system")
 
 
-# -------------------- ROBUST WEBSOCKET ENDPOINT --------------------
-@app.websocket("/ws/logs")
-async def websocket_logs(websocket: WebSocket):
+# -------------------- WEBSOCKET ENDPOINT --------------------
+@app.websocket("/ws/detected_persons")
+async def websocket_detected_persons(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
             try:
-                # Keep connection alive with ping/pong
                 message = await asyncio.wait_for(websocket.receive_text(), timeout=1.0)
                 if message == "ping":
                     await websocket.send_text("pong")
             except asyncio.TimeoutError:
-                # Normal timeout, continue loop
                 continue
             except WebSocketDisconnect:
                 break
             except Exception as e:
-                print(f"WebSocket error: {e}")
                 break
     except WebSocketDisconnect:
-        print("WebSocket client disconnected")
+        pass
     except Exception as e:
         print(f"WebSocket endpoint error: {e}")
     finally:
         await manager.disconnect(websocket)
-
-
-# -------------------- PAGE VISIBILITY CONTROL ENDPOINTS --------------------
-@app.post("/api/page-visible")
-async def set_page_visible():
-    global is_page_visible, system_paused
-    is_page_visible = True
-    system_paused = False
-    await log_to_terminal_and_web_async("👁️ Page is now VISIBLE - System RESUMED", "system")
-    return {"status": "visible", "system_paused": system_paused}
-
-
-@app.post("/api/page-hidden")
-async def set_page_hidden():
-    global is_page_visible, system_paused
-    is_page_visible = False
-    system_paused = True
-    await log_to_terminal_and_web_async("👁️ Page is now HIDDEN - System PAUSED", "system")
-    return {"status": "hidden", "system_paused": system_paused}
-
-
-@app.post("/api/resume-system")
-async def resume_system():
-    global is_page_visible, system_paused
-    is_page_visible = True
-    system_paused = False
-    await log_to_terminal_and_web_async("🔄 System MANUALLY RESUMED", "system")
-    return {"status": "resumed", "system_paused": system_paused}
 
 
 # -------------------- REST ENDPOINTS --------------------
@@ -629,15 +517,27 @@ async def video_feed():
     )
 
 
+@app.get("/api/detected_persons")
+async def get_detected_persons():
+    return {"detected_persons": list(detected_persons)}
+
+
+@app.post("/api/resume-system")
+async def resume_system():
+    global is_page_visible, system_paused
+    is_page_visible = True
+    system_paused = False
+    return {"status": "resumed", "system_paused": system_paused}
+
+
 @app.get("/")
 async def root():
-    return {"message": "⚡ Real-time Face Recognition API with Live Logging"}
+    return {"message": "⚡ Face Recognition API"}
 
 
 @app.get("/status")
 async def get_status():
     return {
-        "mode": "REAL_TIME_LOGGING",
         "interaction_active": stranger_interaction_active,
         "processed_strangers": len(stranger_processed),
         "active_connections": len(manager.active_connections),
@@ -645,29 +545,12 @@ async def get_status():
         "known_persons": len([n for n in known_names if n != 'Known Stranger']) if 'known_names' in globals() else 0,
         "page_visible": is_page_visible,
         "system_paused": system_paused,
-        "active_video_clients": active_video_clients
-    }
-
-
-@app.get("/health")
-async def health_check():
-    return {
-        "status": "healthy",
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "system_paused": system_paused,
-        "active_connections": len(manager.active_connections)
+        "active_video_clients": active_video_clients,
+        "detected_persons": list(detected_persons)
     }
 
 
 if __name__ == "__main__":
     import uvicorn
-    print("⚡⚡⚡ REAL-TIME FACE RECOGNITION WITH LIVE LOGGING ⚡⚡⚡")
-    print("🚀 Features:")
-    print("   📱 Live terminal output on React page")
-    print("   🔥 Real-time WebSocket communication")
-    print("   ⚡ Instant stranger detection")
-    print("   🎤 Voice interaction logging")
-    print("   📊 System status monitoring")
-    print("   👁️ PAGE VISIBILITY CONTROL - Auto pause/resume")
-    print("   🔗 ROBUST CONNECTION MANAGEMENT")
+    print("⚡ FACE RECOGNITION SYSTEM STARTING ⚡")
     uvicorn.run(app, host="127.0.0.1", port=8000)

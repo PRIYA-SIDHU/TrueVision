@@ -1,6 +1,6 @@
 """
 ===============================
-ENGLISH VISION VOICE ASSISTANT - FIXED CONVERSATION LOGGING
+ENGLISH VISION VOICE ASSISTANT - FIXED MULTIPLE INITIALIZATION & TTS
 ===============================
 """
 
@@ -36,7 +36,7 @@ except ImportError as e:
     sys.exit(1)
 
 # ====== CONFIGURATION SETTINGS ======
-CAMERA_URL = "http://10.215.67.197:8080/video"
+CAMERA_URL = "http://10.200.19.61:8080/video"
 LAPTOP_CAMERA_INDEX = 0
 FRAME_WIDTH = 1280
 FRAME_HEIGHT = 720
@@ -140,7 +140,7 @@ def log_conversation(speaker: str, message: str, conv_type: str = "conversation"
     
     log_to_terminal_and_web_sync(log_message, log_type)
 
-# -------------------- GLOBAL VARIABLES --------------------
+# -------------------- GLOBAL VARIABLES - SINGLETON PATTERN --------------------
 command_queue = queue.Queue()
 latest_scene_data = []
 scene_data_lock = threading.Lock()
@@ -152,64 +152,99 @@ microphone_is_active = threading.Event()
 last_warning_time_class = {}
 WARNING_COOLDOWN = 5.0
 
-# -------------------- WORKING TTS SYSTEM --------------------
-def create_tts_engine():
-    """Create a fresh TTS engine instance"""
-    try:
-        engine = pyttsx3.init()
-        engine.setProperty('rate', 180)
-        engine.setProperty('volume', 1.0)
-        
-        # Set voice to first available voice
-        voices = engine.getProperty('voices')
-        if voices and len(voices) > 0:
-            engine.setProperty('voice', voices[0].id)
-        
-        return engine
-    except Exception as e:
-        log_to_terminal_and_web_sync(f"⚠️ TTS Engine creation error: {e}", "error")
-        return None
+# SINGLETON SYSTEM VARIABLES
+system_initialized = False
+system_lock = threading.Lock()
+object_detector = None
+depth_estimator = None
+video_capture = None
+frame_generator_active = False
 
-def speak_text_directly(text, speaker="assistant", log_conversation_flag=True):
-    """Direct TTS execution in separate thread"""
-    def _speak():
-        try:
-            # Log the conversation BEFORE speaking
-            if log_conversation_flag:
-                log_conversation(speaker, text)
-            
-            engine = create_tts_engine()
-            if engine is None:
-                log_to_terminal_and_web_sync("❌ Could not create TTS engine", "error")
-                return
-            
-            # Set speaking flag
-            is_currently_speaking.set()
-            
-            # Speak the text
-            engine.say(text)
-            engine.runAndWait()
-            
-            # Clean up
-            engine.stop()
-            del engine
-            
-        except Exception as e:
-            log_to_terminal_and_web_sync(f"❌ TTS execution error: {e}", "error")
-        finally:
-            # Clear speaking flag
-            is_currently_speaking.clear()
+# -------------------- FIXED TTS SYSTEM --------------------
+class TTSManager:
+    _instance = None
+    _lock = threading.Lock()
     
-    # Run in separate thread
-    try:
-        thread = threading.Thread(target=_speak, daemon=True)
-        thread.start()
-    except Exception as e:
-        log_to_terminal_and_web_sync(f"❌ TTS thread creation error: {e}", "error")
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super(TTSManager, cls).__new__(cls)
+                    cls._instance.initialized = False
+        return cls._instance
+    
+    def __init__(self):
+        if not self.initialized:
+            self.tts_queue = queue.Queue()
+            self.tts_thread = None
+            self.start_tts_worker()
+            self.initialized = True
+    
+    def start_tts_worker(self):
+        """Start TTS worker thread that handles asyncio properly"""
+        def tts_worker():
+            while not stop_program_event.is_set():
+                try:
+                    # Get TTS request from queue
+                    tts_request = self.tts_queue.get(timeout=1)
+                    if tts_request is None:  # Shutdown signal
+                        break
+                    
+                    text, speaker, log_flag = tts_request
+                    
+                    # Log conversation BEFORE speaking
+                    if log_flag:
+                        log_conversation(speaker, text)
+                    
+                    # Create fresh TTS engine in this thread
+                    try:
+                        engine = pyttsx3.init()
+                        engine.setProperty('rate', 180)
+                        engine.setProperty('volume', 1.0)
+                        
+                        voices = engine.getProperty('voices')
+                        if voices and len(voices) > 0:
+                            engine.setProperty('voice', voices[0].id)
+                        
+                        # Set speaking flag
+                        is_currently_speaking.set()
+                        
+                        # Speak
+                        engine.say(text)
+                        engine.runAndWait()
+                        
+                        # Cleanup
+                        engine.stop()
+                        del engine
+                        
+                    except Exception as e:
+                        log_to_terminal_and_web_sync(f"❌ TTS Engine error: {e}", "error")
+                    finally:
+                        # Always clear speaking flag
+                        is_currently_speaking.clear()
+                        
+                except queue.Empty:
+                    continue
+                except Exception as e:
+                    log_to_terminal_and_web_sync(f"❌ TTS Worker error: {e}", "error")
+        
+        self.tts_thread = threading.Thread(target=tts_worker, daemon=True)
+        self.tts_thread.start()
+        log_to_terminal_and_web_sync("✅ TTS Manager initialized", "system")
+    
+    def speak(self, text, speaker="assistant", log_conversation_flag=True):
+        """Queue text for speaking"""
+        try:
+            self.tts_queue.put((text, speaker, log_conversation_flag))
+        except Exception as e:
+            log_to_terminal_and_web_sync(f"❌ TTS Queue error: {e}", "error")
+
+# Global TTS instance
+tts_manager = TTSManager()
 
 def speak_text(text, speaker="assistant", log_conversation_flag=True):
-    """Main speak function with conversation logging"""
-    speak_text_directly(text, speaker, log_conversation_flag)
+    """Main speak function using TTS manager"""
+    tts_manager.speak(text, speaker, log_conversation_flag)
 
 # -------------------- UTILITY FUNCTIONS --------------------
 def determine_side_from_angle(angle_degrees, threshold=ANGLE_THRESHOLD):
@@ -359,10 +394,10 @@ def voice_recognition_thread():
         
         log_to_terminal_and_web_sync("🎤 Voice recognition initialized", "voice")
         
-        # Wait a bit for WebSocket connections to establish
-        time.sleep(2)
+        # Wait a bit for system to be ready
+        time.sleep(3)
         
-        # Initial greeting with conversation logging
+        # Initial greeting
         speak_text("Hello! English Vision Assistant is ready. Say 'help' for available commands.", "assistant", True)
         
         while not stop_program_event.is_set():
@@ -373,7 +408,6 @@ def voice_recognition_thread():
                     try:
                         command_text = recognizer.recognize_google(audio, language='en-US').lower().strip()
                         if len(command_text) > 2:
-                            # Log user's speech in conversation format
                             log_conversation("user", command_text)
                             command_queue.put(command_text)
                     except sr.UnknownValueError:
@@ -391,7 +425,7 @@ def voice_recognition_thread():
         log_to_terminal_and_web_sync(f"❌ Microphone initialization error: {e}", "error")
         microphone_is_active.clear()
 
-# -------------------- VOICE COMMAND PROCESSING --------------------
+# -------------------- VOICE COMMAND PROCESSING - FIXED --------------------
 def process_voice_command(command_text):
     global latest_scene_data
     
@@ -415,16 +449,44 @@ def process_voice_command(command_text):
                 formatted_items.append(class_name)
         return ", ".join(formatted_items)
     
-    # Process different command types
+    # Check for specific object queries
+    if any(keyword in command_text for keyword in ['is there', 'do you see', 'any', 'can you find']):
+        object_to_find = None
+        words = command_text.split()
+        
+        common_objects = ['person', 'chair', 'table', 'bottle', 'car', 'laptop', 'phone', 'book', 'cup', 'dog', 'cat', 'tv', 'monitor', 'keyboard', 'mouse']
+        for obj_name in common_objects:
+            if obj_name in command_text:
+                object_to_find = obj_name
+                break
+        
+        if object_to_find:
+            found_objects = [obj for obj in current_scene if object_to_find in obj['class'].lower()]
+            if found_objects:
+                count = len(found_objects)
+                if count == 1:
+                    obj = found_objects[0]
+                    speak_text(f"Yes, I can see a {obj['class']} on the {obj['side']} side at {obj['distance_meters']:.1f} meters", "assistant", True)
+                else:
+                    speak_text(f"Yes, I can see {count} {object_to_find}s on screen", "assistant", True)
+            else:
+                speak_text(f"No, I don't see any {object_to_find} on screen", "assistant", True)
+        else:
+            speak_text("I'm not sure what object you're looking for. Try asking about a specific object like chair, person, or bottle", "assistant", True)
+        return
+    
+    # Process other command types
     if any(keyword in command_text for keyword in ['screen', 'see', 'describe', 'everything', 'what']):
         if not current_scene:
             speak_text("The screen appears to be empty", "assistant", True)
             return
         
         log_to_terminal_and_web_sync(f"📊 Found {len(current_scene)} objects on screen", "detection")
-        speak_text(f"I can see {len(current_scene)} objects on screen", "assistant", True)
         
-        time.sleep(1)  # Short pause between sentences
+        object_list = format_object_list(current_scene)
+        speak_text(f"I can see {len(current_scene)} objects on screen: {object_list}", "assistant", True)
+        
+        time.sleep(1)
         
         for side in ['left', 'center', 'right']:
             side_objects = [obj for obj in current_scene if obj['side'] == side]
@@ -474,64 +536,74 @@ def process_voice_command(command_text):
     
     elif any(keyword in command_text for keyword in ['help', 'commands', 'what can']):
         log_to_terminal_and_web_sync("ℹ️ Help command requested", "info")
-        speak_text("I can help you with these commands: what's on screen, what's on the left or right, how far is something, how many objects, what's the closest object", "assistant", True)
+        speak_text("I can help you with these commands: what's on screen, what's on the left or right, how far is something, how many objects, what's the closest object, or ask if there's any specific object like chair or person", "assistant", True)
     
     else:
         log_to_terminal_and_web_sync(f"❓ Unknown command: {command_text}", "warning")
-        speak_text("I'm not sure what you're looking for. Try asking 'what's on screen' or say 'help' for available commands", "assistant", True)
+        speak_text("I'm not sure what you're looking for. Try asking 'what's on screen' or 'is there any chair' or say 'help' for available commands", "assistant", True)
 
-# -------------------- SYSTEM INITIALIZATION --------------------
-object_detector = None
-depth_estimator = None
-video_capture = None
-
+# -------------------- SINGLETON SYSTEM INITIALIZATION --------------------
 def initialize_system():
-    global object_detector, depth_estimator, video_capture
+    global system_initialized, object_detector, depth_estimator, video_capture
     
-    log_to_terminal_and_web_sync("🚀 Initializing English Vision Voice Assistant", "system")
-    
-    # Initialize object detector
-    object_detector = ObjectDetector()
-    depth_estimator = SimpleDepthModel()
-    
-    # Initialize camera
-    log_to_terminal_and_web_sync("📹 Connecting to camera...", "system")
-    video_capture = cv2.VideoCapture(CAMERA_URL)
-    
-    if not video_capture.isOpened():
-        log_to_terminal_and_web_sync("📱 Phone camera not available, trying laptop camera...", "warning")
-        video_capture = cv2.VideoCapture(LAPTOP_CAMERA_INDEX)
-    
-    if not video_capture.isOpened():
-        log_to_terminal_and_web_sync("❌ No camera available!", "error")
-        return False
-    
-    video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
-    video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
-    
-    # Test camera
-    ret, test_frame = video_capture.read()
-    if not ret or test_frame is None:
-        log_to_terminal_and_web_sync("❌ Camera read test failed", "error")
-        video_capture.release()
-        return False
-    
-    log_to_terminal_and_web_sync("✅ Camera initialized successfully", "success")
-    
-    # Start voice recognition thread
-    voice_thread = threading.Thread(target=voice_recognition_thread, daemon=True)
-    voice_thread.start()
-    
-    log_to_terminal_and_web_sync("✅ English Vision Assistant is ready!", "success")
-    return True
+    with system_lock:
+        if system_initialized:
+            log_to_terminal_and_web_sync("✅ System already initialized, reusing...", "system")
+            return True
+        
+        log_to_terminal_and_web_sync("🚀 Initializing English Vision Voice Assistant", "system")
+        
+        # Initialize object detector
+        object_detector = ObjectDetector()
+        depth_estimator = SimpleDepthModel()
+        
+        # Initialize camera
+        log_to_terminal_and_web_sync("📹 Connecting to camera...", "system")
+        video_capture = cv2.VideoCapture(CAMERA_URL)
+        
+        if not video_capture.isOpened():
+            log_to_terminal_and_web_sync("📱 Phone camera not available, trying laptop camera...", "warning")
+            video_capture = cv2.VideoCapture(LAPTOP_CAMERA_INDEX)
+        
+        if not video_capture.isOpened():
+            log_to_terminal_and_web_sync("❌ No camera available!", "error")
+            return False
+        
+        video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_WIDTH)
+        video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT)
+        
+        # Test camera
+        ret, test_frame = video_capture.read()
+        if not ret or test_frame is None:
+            log_to_terminal_and_web_sync("❌ Camera read test failed", "error")
+            video_capture.release()
+            return False
+        
+        log_to_terminal_and_web_sync("✅ Camera initialized successfully", "success")
+        
+        # Start voice recognition thread - ONLY ONCE
+        voice_thread = threading.Thread(target=voice_recognition_thread, daemon=True)
+        voice_thread.start()
+        
+        system_initialized = True
+        log_to_terminal_and_web_sync("✅ English Vision Assistant is ready!", "success")
+        return True
 
 # -------------------- MAIN VIDEO PROCESSING --------------------
 def generate_frames():
     global latest_scene_data, video_capture, object_detector, depth_estimator
-    global USE_GRAYSCALE_MODE, DETECTION_CONFIDENCE, last_warning_time_class
+    global USE_GRAYSCALE_MODE, DETECTION_CONFIDENCE, last_warning_time_class, frame_generator_active
+    
+    # Prevent multiple frame generators
+    if frame_generator_active:
+        log_to_terminal_and_web_sync("⚠️ Frame generator already active, returning existing stream", "warning")
+        return
+    
+    frame_generator_active = True
     
     if not initialize_system():
         log_to_terminal_and_web_sync("❌ System initialization failed", "error")
+        frame_generator_active = False
         return
     
     frame_counter = 0
@@ -541,6 +613,7 @@ def generate_frames():
     
     ret, test_frame = video_capture.read()
     if not ret:
+        frame_generator_active = False
         return
         
     frame_height, frame_width = test_frame.shape[:2]
@@ -548,133 +621,134 @@ def generate_frames():
     
     log_to_terminal_and_web_sync(f"📐 Frame size: {frame_width}x{frame_height}", "system")
     
-    while not stop_program_event.is_set():
-        ret, current_frame = video_capture.read()
-        frame_counter += 1
-        
-        if not ret or current_frame is None:
-            continue
+    try:
+        while not stop_program_event.is_set():
+            ret, current_frame = video_capture.read()
+            frame_counter += 1
             
-        display_frame = current_frame.copy()
-        
-        if USE_GRAYSCALE_MODE:
-            processing_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
-            processing_frame = cv2.cvtColor(processing_frame, cv2.COLOR_GRAY2BGR)
-        else:
-            processing_frame = current_frame
-        
-        # Object detection
-        detected_objects = object_detector.detect_objects(processing_frame)
-        
-        if frame_counter % DEPTH_PROCESSING_SKIP == 0:
-            last_depth_map = depth_estimator.estimate_depth(current_frame)
-        
-        scene_objects = []
-        current_time = time.time()
-        
-        # Process each detected object
-        for detection in detected_objects:
-            x1, y1, x2, y2 = detection['bbox']
-            center_u = (x1 + x2) // 2
-            center_v = (y1 + y2) // 2
+            if not ret or current_frame is None:
+                continue
+                
+            display_frame = current_frame.copy()
             
-            # Calculate distance
-            actual_distance = calculate_distance(detection['bbox'], detection['class'], frame_height, frame_width)
-            
-            # Calculate position
-            camera_x, camera_y, camera_z = convert_pixel_to_camera_coordinates(center_u, center_v, actual_distance, camera_intrinsics)
-            angle_degrees = math.degrees(math.atan2(camera_x, camera_z))
-            side_position = determine_side_from_angle(angle_degrees)
-            
-            scene_objects.append({
-                'class': detection['class'],
-                'confidence': detection['confidence'],
-                'bbox': detection['bbox'],
-                'distance_meters': actual_distance,
-                'angle_degrees': round(angle_degrees, 1),
-                'side': side_position
-            })
-            
-            # Warning system with conversation logging
-            objclass = detection['class']
-            if actual_distance < MINIMUM_ALERT_DISTANCE:
-                if (objclass not in last_warning_time_class or
-                    current_time - last_warning_time_class[objclass] > WARNING_COOLDOWN):
-                    
-                    # Warning with conversation logging
-                    warning_message = f"{objclass} is very close at {actual_distance:.1f} meters!"
-                    speak_text(warning_message, "warning", True)
-                    
-                    last_warning_time_class[objclass] = current_time
-        
-        # Update global scene data
-        with scene_data_lock:
-            latest_scene_data = scene_objects.copy()
-        
-        # Draw bounding boxes and labels
-        for i, obj in enumerate(scene_objects):
-            x1, y1, x2, y2 = obj['bbox']
-            
-            if obj['side'] == 'left':
-                box_color = (255, 100, 100)
-            elif obj['side'] == 'right':
-                box_color = (100, 255, 100)
+            if USE_GRAYSCALE_MODE:
+                processing_frame = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
+                processing_frame = cv2.cvtColor(processing_frame, cv2.COLOR_GRAY2BGR)
             else:
-                box_color = (100, 100, 255)
+                processing_frame = current_frame
             
-            brightness = int(155 + 100 * obj['confidence'])
-            box_color = tuple(min(255, int(color * brightness / 255)) for color in box_color)
-            thickness = 3 if obj['confidence'] > 0.5 else 2
+            # Object detection
+            detected_objects = object_detector.detect_objects(processing_frame)
             
-            cv2.rectangle(display_frame, (x1, y1), (x2, y2), box_color, thickness)
+            if frame_counter % DEPTH_PROCESSING_SKIP == 0:
+                last_depth_map = depth_estimator.estimate_depth(current_frame)
             
-            label_text = f"{obj['class']} {obj['distance_meters']:.1f}m"
-            if obj['distance_meters'] < MINIMUM_ALERT_DISTANCE:
-                label_text += " ⚠️"
+            scene_objects = []
+            current_time = time.time()
             
-            (text_width, text_height), _ = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-            cv2.rectangle(display_frame, (x1, y1 - text_height - 8), (x1 + text_width + 5, y1), box_color, -1)
-            cv2.putText(display_frame, label_text, (x1 + 2, y1 - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
-            cv2.putText(display_frame, str(i + 1), (x1 + 5, y1 + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, box_color, 2)
-        
-        # Add status overlay
-        tts_status = "🔊 SPEAKING" if is_currently_speaking.is_set() else "🎤 LISTENING"
-        cv2.putText(display_frame, f"English Assistant {tts_status}", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-        
-        # Object counts by side
-        left_count = len([obj for obj in scene_objects if obj['side'] == 'left'])
-        center_count = len([obj for obj in scene_objects if obj['side'] == 'center'])
-        right_count = len([obj for obj in scene_objects if obj['side'] == 'right'])
-        cv2.putText(display_frame, f"Left: {left_count} | Center: {center_count} | Right: {right_count}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
-        
-        # FPS monitoring (less frequent)
-        fps_counter += 1
-        if fps_counter % 120 == 0:
-            current_fps = 120 / (time.time() - fps_timer)
-            log_to_terminal_and_web_sync(f"📊 FPS: {current_fps:.1f} | Objects: {len(scene_objects)}", "system")
-            fps_timer = time.time()
-        
-        # Process voice commands
-        commands_processed = 0
-        while not command_queue.empty() and commands_processed < 2:
-            try:
-                voice_command = command_queue.get_nowait()
-                command_thread = threading.Thread(target=process_voice_command, args=(voice_command,), daemon=True)
-                command_thread.start()
-                commands_processed += 1
-            except queue.Empty:
-                break
-        
-        # Encode frame for streaming
-        ret, buffer = cv2.imencode('.jpg', display_frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
-        if ret:
-            frame_bytes = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+            # Process each detected object
+            for detection in detected_objects:
+                x1, y1, x2, y2 = detection['bbox']
+                center_u = (x1 + x2) // 2
+                center_v = (y1 + y2) // 2
+                
+                # Calculate distance
+                actual_distance = calculate_distance(detection['bbox'], detection['class'], frame_height, frame_width)
+                
+                # Calculate position
+                camera_x, camera_y, camera_z = convert_pixel_to_camera_coordinates(center_u, center_v, actual_distance, camera_intrinsics)
+                angle_degrees = math.degrees(math.atan2(camera_x, camera_z))
+                side_position = determine_side_from_angle(angle_degrees)
+                
+                scene_objects.append({
+                    'class': detection['class'],
+                    'confidence': detection['confidence'],
+                    'bbox': detection['bbox'],
+                    'distance_meters': actual_distance,
+                    'angle_degrees': round(angle_degrees, 1),
+                    'side': side_position
+                })
+                
+                # Warning system
+                objclass = detection['class']
+                if actual_distance < MINIMUM_ALERT_DISTANCE:
+                    if (objclass not in last_warning_time_class or
+                        current_time - last_warning_time_class[objclass] > WARNING_COOLDOWN):
+                        
+                        warning_message = f"{objclass} is very close at {actual_distance:.1f} meters!"
+                        speak_text(warning_message, "warning", True)
+                        
+                        last_warning_time_class[objclass] = current_time
+            
+            # Update global scene data
+            with scene_data_lock:
+                latest_scene_data = scene_objects.copy()
+            
+            # Draw bounding boxes and labels
+            for i, obj in enumerate(scene_objects):
+                x1, y1, x2, y2 = obj['bbox']
+                
+                if obj['side'] == 'left':
+                    box_color = (255, 100, 100)
+                elif obj['side'] == 'right':
+                    box_color = (100, 255, 100)
+                else:
+                    box_color = (100, 100, 255)
+                
+                brightness = int(155 + 100 * obj['confidence'])
+                box_color = tuple(min(255, int(color * brightness / 255)) for color in box_color)
+                thickness = 3 if obj['confidence'] > 0.5 else 2
+                
+                cv2.rectangle(display_frame, (x1, y1), (x2, y2), box_color, thickness)
+                
+                label_text = f"{obj['class']} {obj['distance_meters']:.1f}m"
+                if obj['distance_meters'] < MINIMUM_ALERT_DISTANCE:
+                    label_text += " ⚠️"
+                
+                (text_width, text_height), _ = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+                cv2.rectangle(display_frame, (x1, y1 - text_height - 8), (x1 + text_width + 5, y1), box_color, -1)
+                cv2.putText(display_frame, label_text, (x1 + 2, y1 - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+                cv2.putText(display_frame, str(i + 1), (x1 + 5, y1 + 25), cv2.FONT_HERSHEY_SIMPLEX, 0.8, box_color, 2)
+            
+            # Add status overlay
+            tts_status = "🔊 SPEAKING" if is_currently_speaking.is_set() else "🎤 LISTENING"
+            cv2.putText(display_frame, f"English Assistant {tts_status}", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            
+            # Object counts by side
+            left_count = len([obj for obj in scene_objects if obj['side'] == 'left'])
+            center_count = len([obj for obj in scene_objects if obj['side'] == 'center'])
+            right_count = len([obj for obj in scene_objects if obj['side'] == 'right'])
+            cv2.putText(display_frame, f"Left: {left_count} | Center: {center_count} | Right: {right_count}", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
+            
+            # FPS monitoring
+            fps_counter += 1
+            if fps_counter % 120 == 0:
+                current_fps = 120 / (time.time() - fps_timer)
+                log_to_terminal_and_web_sync(f"📊 FPS: {current_fps:.1f} | Objects: {len(scene_objects)}", "system")
+                fps_timer = time.time()
+            
+            # Process voice commands
+            commands_processed = 0
+            while not command_queue.empty() and commands_processed < 2:
+                try:
+                    voice_command = command_queue.get_nowait()
+                    command_thread = threading.Thread(target=process_voice_command, args=(voice_command,), daemon=True)
+                    command_thread.start()
+                    commands_processed += 1
+                except queue.Empty:
+                    break
+            
+            # Encode frame for streaming
+            ret, buffer = cv2.imencode('.jpg', display_frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+            if ret:
+                frame_bytes = buffer.tobytes()
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
     
-    # Cleanup
-    if video_capture:
-        video_capture.release()
+    except Exception as e:
+        log_to_terminal_and_web_sync(f"❌ Frame generation error: {e}", "error")
+    finally:
+        frame_generator_active = False
 
 # -------------------- WEBSOCKET ENDPOINT --------------------
 @app.websocket("/ws/logs")
@@ -707,6 +781,8 @@ async def get_status():
         "is_speaking": is_currently_speaking.is_set(),
         "confidence_threshold": DETECTION_CONFIDENCE,
         "active_connections": len(manager.active_connections),
+        "system_initialized": system_initialized,
+        "frame_generator_active": frame_generator_active,
     }
 
 @app.get("/scene_data")
@@ -725,11 +801,14 @@ async def shutdown_event():
     stop_program_event.set()
     if video_capture:
         video_capture.release()
+    # Stop TTS queue
+    if tts_manager.tts_queue:
+        tts_manager.tts_queue.put(None)  # Shutdown signal
     log_to_terminal_and_web_sync("🛑 English Vision Assistant shutting down", "system")
 
 if __name__ == "__main__":
     import uvicorn
-    print("🎥🗣️ English Vision Voice Assistant - WITH CONVERSATION LOGGING (FIXED)")
+    print("🎥🗣️ English Vision Voice Assistant - FIXED MULTIPLE INITIALIZATION & TTS")
     print("🚀 Features:")
     print("   📹 Real-time object detection with YOLO")
     print("   🎤 Voice commands and TTS responses")
@@ -737,6 +816,10 @@ if __name__ == "__main__":
     print("   📱 Live WebSocket logging")
     print("   🌐 React frontend integration")
     print("   🔊 Working TTS warnings for close objects!")
-    print("   💬 CONVERSATION LOGGING - User & Assistaurknt talks")
+    print("   💬 CONVERSATION LOGGING - User & Assistant talks")
     print("   ✅ FIXED: Initial greeting conversation visible!")
+    print("   ✅ FIXED: 'What's on screen' now mentions object names!")
+    print("   ✅ FIXED: Can ask 'Is there any chair/person?' etc!")
+    print("   🛠️ FIXED: Multiple initialization prevention!")
+    print("   🔧 FIXED: TTS asyncio 'run loop already started' error!")
     uvicorn.run(app, host="127.0.0.1", port=8000)

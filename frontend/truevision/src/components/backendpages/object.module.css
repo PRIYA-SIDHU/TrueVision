@@ -1,0 +1,435 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid #4f46e5;
+}
+
+.title {
+  color: #4f46e5;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.statusDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.statusDot.connected {
+  background: #10b981;
+}
+
+.statusDot.disconnected {
+  background: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.statusText {
+  font-weight: 600;
+  color: #374151;
+}
+
+.statusItem {
+  background: #f3f4f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  height: calc(100vh - 100px);
+}
+
+.cameraSection {
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+
+.cameraContainer {
+  position: relative;
+  background: #1f2937;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cameraFeed {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.cameraOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+  padding: 1rem;
+  color: white;
+}
+
+.overlayInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.detectionStats {
+  display: flex;
+  gap: 1rem;
+}
+
+.commandsSection {
+  grid-column: 2;
+  grid-row: 1;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  overflow-y: auto;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.commandsHeader h2 {
+  color: #4f46e5;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.commandsHeader p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.commandsGrid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.commandCategory {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.commandCategory h3 {
+  color: #374151;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.commandList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.commandItem {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.commandItem:hover {
+  border-color: #4f46e5;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+}
+
+.commandText {
+  font-weight: 600;
+  color: #4f46e5;
+  font-size: 0.9rem;
+}
+
+.commandDesc {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.tipsSection {
+  margin-top: 1.5rem;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.tipsSection h3 {
+  color: #92400e;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.tipsList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.tipItem {
+  font-size: 0.85rem;
+  color: #92400e;
+  padding: 0.25rem 0;
+}
+
+.logsSection {
+  grid-column: 2;
+  grid-row: 2;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.logsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.logsHeader h3 {
+  color: #4f46e5;
+  font-size: 1.25rem;
+}
+
+.clearBtn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.clearBtn:hover {
+  background: #dc2626;
+}
+
+.logsContainer {
+  flex: 1;
+  overflow-y: auto;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  max-height: 400px;
+}
+
+.noLogs {
+  text-align: center;
+  color: #6b7280;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.logEntry {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.logTime {
+  font-weight: 600;
+  min-width: 60px;
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.logMessage {
+  flex: 1;
+}
+
+.logUser {
+  background: #dbeafe;
+  border-left: 4px solid #3b82f6;
+  color: #1e40af;
+}
+
+.logAssistant {
+  background: #d1fae5;
+  border-left: 4px solid #10b981;
+  color: #065f46;
+}
+
+.logWarning {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+}
+
+.logSuccess {
+  background: #d1fae5;
+  border-left: 4px solid #10b981;
+  color: #065f46;
+}
+
+.logError {
+  background: #fee2e2;
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+}
+
+.logSystem {
+  background: #e0e7ff;
+  border-left: 4px solid #6366f1;
+  color: #3730a3;
+}
+
+.logVoice {
+  background: #fce7f3;
+  border-left: 4px solid #ec4899;
+  color: #be185d;
+}
+
+.logCommand {
+  background: #fff7ed;
+  border-left: 4px solid #f97316;
+  color: #c2410c;
+}
+
+.logDetection {
+  background: #f0f9ff;
+  border-left: 4px solid #0ea5e9;
+  color: #0c4a6e;
+}
+
+.logInfo {
+  background: #f8fafc;
+  border-left: 4px solid #64748b;
+  color: #334155;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  
+  .cameraSection {
+    grid-column: 1;
+    grid-row: 1;
+    height: 400px;
+  }
+  
+  .commandsSection {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  
+  .logsSection {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .statusBar {
+    gap: 1rem;
+  }
+  
+  .mainContent {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .commandsSection, .logsSection {
+    padding: 1rem;
+  }
+  
+  .cameraSection {
+    height: 300px;
+  }
+}
+
+/* Scrollbar Styling */
+.logsContainer::-webkit-scrollbar,
+.commandsSection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.logsContainer::-webkit-scrollbar-track,
+.commandsSection::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.logsContainer::-webkit-scrollbar-thumb,
+.commandsSection::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.logsContainer::-webkit-scrollbar-thumb:hover,
+.commandsSection::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
