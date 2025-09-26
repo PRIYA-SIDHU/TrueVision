@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./currencydetector.module.css";
 import AnimatedSection from "./animated";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +38,8 @@ const CurrencyDetector = () => {
           />
         </div>
       }
-    />
+
+     />
   );
 };
 
