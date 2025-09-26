@@ -30,7 +30,10 @@ export default function Text() {
       flower.current,
       { scale: 0, opacity: 0 },
       { scale: 1.5, opacity: 1, duration: 0.5, ease: "elastic.out(1,0.5)" }
-    ).to(flower.current, { opacity: 0, scale: 0, duration: 0.3, ease: "power1.inOut" });
+    )
+    .to(
+      flower.current,
+       { opacity: 0, scale: 0, duration: 0.3, ease: "power1.inOut" });
 
     // E → R
     tl.fromTo(
@@ -42,9 +45,13 @@ export default function Text() {
       .to(letterE.current, {
         opacity: 0,
         duration: 0.2,
-        onComplete: () => { letterE.current.innerText = "R"; },
+        onComplete: () => { 
+          letterE.current.innerText = "R"; 
+        },
       })
-      .to(letterE.current, { opacity: 1, duration: 0.2 });
+      .to(
+        letterE.current, 
+        {  opacity: 1, duration: 0.2 });
 
     // U
     tl.fromTo(
@@ -78,8 +85,14 @@ export default function Text() {
       "+=0.1"
     );
 
-    visionTimeline.to(visionS.current, { opacity: 1, rotation: -90, duration: 0.15 })
-      .to(visionS.current, { duration: 1.2 });
+    visionTimeline.to(
+      visionS.current, 
+      { opacity: 1, rotation: -90, duration: 0.15 }
+    )
+      .to (
+        visionS.current, 
+        { duration: 1.2 }
+      );
 
     visionTimeline.fromTo(
       visionI2.current,
@@ -87,10 +100,9 @@ export default function Text() {
       { y: 0, opacity: 1, duration: 0.7, ease: "bounce.out" }
     );
 
-    visionTimeline.to(visionS.current, {
-      rotation: 0,
-      duration: 0.4,
-      ease: "power2.out",
+    visionTimeline.to(
+      visionS.current, 
+      {rotation: 0,duration: 0.4,ease: "power2.out",
       onStart: () => visionS.current.classList.add(styles['glow-yellow']),
       onComplete: () => setTimeout(() => visionS.current.classList.remove(styles['glow-yellow']), 800),
     });
