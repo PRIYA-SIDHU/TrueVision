@@ -18,14 +18,14 @@ export default function Text() {
   useEffect(() => {
     const tl = gsap.timeline();
 
-    // T
+
     tl.fromTo(
       letterT.current,
       { rotationX: -90, transformOrigin: "center bottom", opacity: 0 },
       { rotationX: 0, opacity: 1, duration: 0.8, ease: "bounce.out" }
     );
 
-    // Flower
+
     tl.fromTo(
       flower.current,
       { scale: 0, opacity: 0 },
@@ -35,7 +35,6 @@ export default function Text() {
       flower.current,
        { opacity: 0, scale: 0, duration: 0.3, ease: "power1.inOut" });
 
-    // E → R
     tl.fromTo(
       letterE.current,
       { y: 100, opacity: 0, rotationY: 180, transformOrigin: "center" },
@@ -53,7 +52,6 @@ export default function Text() {
         letterE.current, 
         {  opacity: 1, duration: 0.2 });
 
-    // U
     tl.fromTo(
       letterU.current,
       { y: 50, opacity: 0 },
@@ -61,7 +59,7 @@ export default function Text() {
       "<"
     );
 
-    // E bounce
+
     tl.fromTo(
       letterEBounce.current,
       { y: -500, opacity: 0 },
@@ -69,14 +67,13 @@ export default function Text() {
       "+=0.5"
     );
 
-    // VISION
     const visionTimeline = gsap.timeline({ delay: 0.3 });
 
     visionTimeline.fromTo(
       visionV.current,
       { x: -800, opacity: 0 },
       { x: 0, opacity: 1, duration: 0.4, ease: "power4.out" }
-    );
+    ); 
 
     visionTimeline.fromTo(
       visionI1.current,
