@@ -2,7 +2,7 @@ import React from "react";
 import AnimatedSection from "./animated";
 import styles from "./bookreader.module.css";
 import { useNavigate } from "react-router-dom";
-
+import bookimg from "../../assets/images/bookreader.png";
 
 const bookreader = () => {
   const navigate = useNavigate()
@@ -10,7 +10,7 @@ const bookreader = () => {
     <AnimatedSection
     left={
       <img
-        src="https://randomuser.me/api/portraits/men/65.jpg"  // Replace with your image path
+        src={bookimg}  // Replace with your image path
         alt="Booker Reader Demo"
         className={styles.demoImage}
       />

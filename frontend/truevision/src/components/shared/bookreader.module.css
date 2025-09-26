@@ -1,25 +1,4 @@
-.splitSection {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background: transparent;
-  border-radius: 1.5rem;
-  margin: 2rem 0;
-  padding: 0.5rem 2vw;
-  box-shadow: 0 4px 24px rgba(14, 20, 36, 0.15);
-  gap: 2.5rem; /* Controls the space between image and text */
-  min-height: 370px;
-}
 
-/* Image left, fills up to 40% of section width but never overflows */
-.left {
-  flex: 1 1 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Big, responsive image */
 .demoImage {
   width: clamp(320px, 38vw, 480px);
   height: auto;
@@ -30,20 +9,6 @@
   border: 2px solid #1b1c21;
   box-shadow: 0 5px 22px rgba(80, 80, 80, 0.09);
   transition: transform 0.3s cubic-bezier(.4,2.2,.2,1);
-}
-/* .demoImage:hover {
-  transform: scale(1.07);
-} */
-
-.right {
-  flex: 1 1 48%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  
-  gap: 1.2rem;
-  min-width: 280px;
 }
 
 .bigTitle {
@@ -82,21 +47,6 @@
 }
 
 @media (max-width: 900px) {
-  .splitSection {
-  
-    flex-direction: column;
-    gap: 1.2rem;
-    padding: 2rem 0.2rem;
-    min-height: unset;
-  }
-  .left, .right {
-    flex: none;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 0;
-  }
   .demoImage {
     width: 70vw;
     min-width: 170px;
@@ -105,8 +55,5 @@
   .bigTitle {
     font-size: 1.6rem;
   }
-  .right {
-    align-items: center;
-    text-align: center;
-  }
+
 }

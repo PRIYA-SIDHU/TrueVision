@@ -1,10 +1,10 @@
 import React from "react";
-import styles from "./letsfind.module.css";
+import styles from "./colourdetect.module.css";
 import AnimatedSection from "./animated";
 import { useNavigate } from "react-router-dom";
+import colourimg from "../../assets/images/colourdetect.png";
 
-
-const letsfind = () => {
+const ColourDetection= () => {
   const navigate = useNavigate()
   return (
     <AnimatedSection
@@ -12,7 +12,7 @@ const letsfind = () => {
    left = {
     <div className={styles.left}>
       <img
-        src="https://st.depositphotos.com/2001755/3622/i/450/depositphotos_36220949-stock-photo-beautiful-landscape.jpg" // Replace with your actual image path
+        src={colourimg}// Replace with your actual image path
         alt="Lets Find Demo"
         className={styles.demoImage}
       />
@@ -35,4 +35,4 @@ const letsfind = () => {
   )
 }
 
-export default letsfind
+export default ColourDetection ;

@@ -1,26 +1,3 @@
-.splitSection {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  border-radius: 1.5rem;
-  margin: 2.5rem 0;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 4px 24px rgba(14, 20, 36, 0.15);
-  gap: 2.5rem;
-   margin-bottom: 200px;
-  margin-top: 300px;
-}
-
-.left {
-  order: 1;
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 1.2rem;
-  padding-left: 2rem;
-}
 .ctaButton {
   background: #ffd600;
   color: #22263a;
@@ -42,7 +19,7 @@
 .bigTitle {
   font-family: 'Press Start 2P', 'VT323', 'Fira Mono', 'Menlo', monospace;
   font-size: 2.2rem;
-  color: #fff;
+  color: #ffd600;
   margin-bottom: 0.7rem;
   font-weight: bold;
   line-height: 1.14;
@@ -69,14 +46,6 @@
   color: #ffd600;
 }
 
-.right {
-  order: 2;
-  flex: 1.7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-right: 2rem;
-}
 
 .demoImage {
   width: 500px;
@@ -90,27 +59,6 @@
 }
 
 @media (max-width: 900px) {
-  .splitSection {
-    flex-direction: column;
-    padding: 2rem 1rem;
-    gap: 1.6rem;
-  }
-  .left {
-    order: 2;
-    flex: none;
-    width: 100%;
-    align-items: center;
-    padding: 0;
-  }
-  .right {
-    order: 1;
-    flex: none;
-    width: 100%;
-    align-items: center;
-    padding: 0;
-    justify-content: center;
-    margin-top: 1.2rem;
-  }
   .bigTitle {
     font-size: 1.4rem;
     margin-bottom: 0.45rem;

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./currencydetector.module.css";
 import AnimatedSection from "./animated";
-import { useNavigate } from "react-router-dom";
+import currencyimg from "../../assets/images/currencydetector.png";
 
 const CurrencyDetector = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const CurrencyDetector = () => {
             </p>
             <button
               className={styles.ctaButton}
-               
+                onClick={() => navigate("/currency-detector")}
             >
               currency detector
             </button>
@@ -32,7 +32,7 @@ const CurrencyDetector = () => {
       right={
         <div className={styles.right}>
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7rd-L1O08jT63q1yKavoQA200iJbxFbKzhg&s"
+            src={currencyimg}
             alt="Practice Coding Chops"
             className={styles.demoImage}
           />

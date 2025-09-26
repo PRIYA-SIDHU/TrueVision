@@ -3,6 +3,7 @@ import styles from "./objectdetection.module.css";
 import AnimatedSection from "./animated";
 import { useNavigate } from "react-router-dom";
 
+
 const ObjectDetection = () => {
   const navigate = useNavigate()
    return (
